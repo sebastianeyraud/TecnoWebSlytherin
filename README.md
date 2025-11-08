@@ -30,9 +30,7 @@ De otra forma, su sistema podría tomar el Angular global que tengan instalado y
 
 En este proyecto se usa Angular CLI 15 local, ya incluido en node_modules.
 
-Si necesitan usar comandos como generar componentes, utilicen el ng local:
-
-npx ng g c nombre-del-componente
+Si necesitan usar comandos como generar componentes, utilicen el ng local.
 
 ---
 
