@@ -9,8 +9,8 @@
 
 2. **Clonar el repositorio y entrar al proyecto:**
    ```bash
-   git clone <url-del-repo>
-   cd AMC_TecWeb
+   git clone https://github.com/sebastianeyraud/TecnoWebSlytherin.git
+   cd TecnoWebSlytherin
    ```
 
 3. Instalar dependencias
