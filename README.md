@@ -37,7 +37,7 @@ npx ng version
 
 o
 
-.\node_modules\.bin\ng version
+.\node_modules\\.bin\ng version
 
 (el version puede ser cualquier cosa)
 
