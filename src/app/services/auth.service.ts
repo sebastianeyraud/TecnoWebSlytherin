@@ -8,8 +8,8 @@ import { Usuario } from '../models/usuario.model';
 export class AuthService {
   private readonly STORAGE_KEY = 'myapp_session';
   private credenciales = new Map<string, string[]>([
-    ['user@example.com', ['user', 'usuario']],
-    ['admin@example.com', ['admin', 'admin']],
+    ['user', ['user', 'usuario']],
+    ['admin', ['admin', 'admin']],
   ]);
 
   constructor() {}
@@ -56,8 +56,25 @@ export class AuthService {
     if (this.credenciales.has(user.email)) {
       throw new Error('Usuario ya registrado');
     }
-    this.credenciales.set(user.email, [user.password, user.rol || 'usuario']);
-    // debería redirigir a login para crear la instancia de usuario
+
+    // Guardado en credenciales "fake"
+    this.credenciales.set(user.email, [user.password, user.rol || 'user']);
+
+    // -----------------------------
+    // GUARDAR EN LA LISTA DE USUARIOS
+    // -----------------------------
+    const raw = localStorage.getItem('usuarios');
+    const arr = raw ? JSON.parse(raw) : [];
+
+    // guardar en formato JSON, no como clase
+    arr.push((user as any).toJSON ? (user as any).toJSON() : user);
+
+    localStorage.setItem('usuarios', JSON.stringify(arr));
+  }
+
+  getAllUsuarios(): any[] {
+    const raw = localStorage.getItem('usuarios');
+    return raw ? JSON.parse(raw) : [];
   }
 
   logout(): void {

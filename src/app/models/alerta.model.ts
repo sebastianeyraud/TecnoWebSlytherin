@@ -1,3 +1,5 @@
+import { Funcion } from "./funcion.model";
+import { Promocion } from "./promocion.model";
 import { TipoAlerta } from "./tipo-alerta";
 
 export class Alerta {
@@ -15,7 +17,7 @@ export class Alerta {
   ) {
     this.titulo = titulo;
     this.mensaje = mensaje;
-    this.tipo = tipo;
+    this.tipo = TipoAlerta.AVISO;
     this.dirigida_a = dirigida_a;
     this.created_at = new Date();
   }
@@ -27,12 +29,5 @@ export class Alerta {
   public getTipo(): TipoAlerta {return this.tipo;}
   public getDirigidaA(): string {return this.dirigida_a;}
   public getCreatedAt(): Date {return this.created_at;}
-
-  // ----------- SETTERS -----------
-
-  public setTitulo(titulo: string): void {this.titulo = titulo;}
-  public setMensaje(mensaje: string): void {this.mensaje = mensaje;}
-  public setTipo(tipo: TipoAlerta): void {this.tipo = tipo;}
-  public setDirigidaA(destino: string): void {this.dirigida_a = destino;}
 
 }

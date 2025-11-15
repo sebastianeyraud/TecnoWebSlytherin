@@ -1,6 +1,8 @@
+import { Funcion } from "./funcion.model";
+
 export class Pelicula {
-  private id: string;
   private titulo: string;
+  private funciones: Funcion[];
   private sinopsis: string;
   private duracion_min: number;
   private genero: string;
@@ -10,8 +12,8 @@ export class Pelicula {
   private casting: string[];
 
   constructor(
-    id: string,
     titulo: string,
+    funciones: Funcion[],
     sinopsis: string,
     duracion_min: number,
     genero: string,
@@ -19,8 +21,8 @@ export class Pelicula {
     poster_url: string,
     casting: string[] = []
   ) {
-    this.id = id;
     this.titulo = titulo;
+    this.funciones = [];
     this.sinopsis = sinopsis;
     this.duracion_min = duracion_min;
     this.genero = genero;
@@ -31,8 +33,8 @@ export class Pelicula {
   }
 
   // ---------- GETTERS (1 línea) ----------
-  getId = () => this.id;
   getTitulo = () => this.titulo;
+  getFunciones = () => this.funciones;
   getSinopsis = () => this.sinopsis;
   getDuracionMin = () => this.duracion_min;
   getGenero = () => this.genero;
@@ -52,4 +54,5 @@ export class Pelicula {
 
   // Añadir actores
   addActor = (actor: string) => this.casting.push(actor);
+  addFuncion = (f:Funcion) => this.funciones.push(f);
 }

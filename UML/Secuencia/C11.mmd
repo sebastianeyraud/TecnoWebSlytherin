@@ -1,37 +1,36 @@
 sequenceDiagram
     participant Admin
     participant UI
-    participant Sistema
     participant AlertaService
-    participant NotifService
+    participant LocalStorage
     participant Usuario
 
-    %% Admin inicia la creación de una alerta
-    Admin->>UI: Crear alerta (tipo, titulo, mensaje, destinatarios)
-    UI->>Sistema: POST /alertas {tipo, titulo, mensaje, destinatarios}
+    %% Admin crea alerta en la UI
+    Admin->>UI: Rellenar formulario y enviar
 
-    %% Sistema valida y enruta según tipo
-    Sistema->>Sistema: validar datos de alerta
-    alt tipo == "ESTRENO"
-        Sistema->>AlertaService: crearAlerta({tipo: ESTRENO, ...})
-    else tipo == "PROMOCION"
-        Sistema->>AlertaService: crearAlerta({tipo: PROMOCION, ...})
-    else
-        Sistema->>AlertaService: crearAlerta({tipo: AVISO, ...})
+    %% UI llama al servicio (alertNormal/alertFuncion/alertPromo)
+    UI->>AlertaService: alertNormal/alertFuncion/alertPromo(...)
+
+    %% AlertaService lee la lista de usuarios desde localStorage
+    AlertaService->>LocalStorage: getItem('usuarios')
+    LocalStorage-->>AlertaService: rawUsers (JSON) or null
+
+    alt rawUsers != null
+        %% Hay usuarios -> parse y repartir
+        AlertaService->>AlertaService: arr = JSON.parse(rawUsers)
+        loop por cada u in arr
+            AlertaService->>Usuario: u.notificaciones.push(alert)  %% push POJO/alert
+        end
+        %% Persistir cambios
+        AlertaService->>LocalStorage: setItem('usuarios', JSON.stringify(arr))
+        LocalStorage-->>AlertaService: OK
+        AlertaService-->>UI: return true
+        UI-->>Admin: Mostrar "Alerta enviada"
+    else rawUsers == null
+        %% No hay usuarios -> arr = [] y se guarda (resultado: nadie recibe)
+        AlertaService->>AlertaService: arr = []
+        AlertaService->>LocalStorage: setItem('usuarios', JSON.stringify(arr))
+        LocalStorage-->>AlertaService: OK
+        AlertaService-->>UI: return true
+        UI-->>Admin: Mostrar "Alerta creada (sin destinatarios)"
     end
-
-    %% AlertaService persiste y relaciona a usuarios
-    AlertaService->>AlertaService: guardar alerta en store
-    AlertaService->>AlertaService: asignar a destinatarios (lista de usuarios)
-
-    %% Para cada usuario destinatario: guardar en sus notificaciones y enviar
-    loop por cada usuario destinatario
-        AlertaService->>Usuario: push a listaNotificaciones (guardar)
-        AlertaService->>NotifService: enviarNotificacion(usuario, alerta)
-        NotifService-->>Usuario: notificacion (in-app/email/push)
-    end
-
-    %% Confirmación al Admin
-    AlertaService-->>Sistema: alerta_creada(resultado)
-    Sistema-->>UI: 201 Created (alerta_id)
-    UI-->>Admin: mostrar "Alerta creada" (alerta_id)

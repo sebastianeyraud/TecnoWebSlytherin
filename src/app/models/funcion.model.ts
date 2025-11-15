@@ -1,7 +1,9 @@
+import { Pelicula } from "./pelicula.model";
+import { Sala } from "./sala.model";
+
 export class Funcion {
-  private id: string;
-  private pelicula_id: string;
-  private sala_id: string;
+  private pelicula: Pelicula;
+  private sala: Sala;
   private start_time: Date;
   private end_time: Date;
   private formato: string;
@@ -11,18 +13,16 @@ export class Funcion {
   private updated_at: Date;
 
   constructor(
-    id: string,
-    pelicula_id: string,
-    sala_id: string,
+    pelicula: Pelicula,
+    sala: Sala,
     start_time: Date,
     end_time: Date,
     formato: string,
     precio_base: number,
     disponible: boolean = true
   ) {
-    this.id = id;
-    this.pelicula_id = pelicula_id;
-    this.sala_id = sala_id;
+    this.pelicula = pelicula;
+    this.sala = sala;
     this.start_time = start_time;
     this.end_time = end_time;
     this.formato = formato;
@@ -30,12 +30,13 @@ export class Funcion {
     this.disponible = disponible;
     this.created_at = new Date();
     this.updated_at = new Date();
+
+    pelicula.addFuncion(this);
   }
 
   // ---------- GETTERS (1 línea) ----------
-  getId = () => this.id;
-  getPeliculaId = () => this.pelicula_id;
-  getSalaId = () => this.sala_id;
+  getPelicula = () => this.pelicula;
+  getSala = () => this.sala;
   getStartTime = () => this.start_time;
   getEndTime = () => this.end_time;
   getFormato = () => this.formato;
@@ -45,8 +46,8 @@ export class Funcion {
   getUpdatedAt = () => this.updated_at;
 
   // ---------- SETTERS (1 línea) ----------
-  setPeliculaId = (v: string) => this.pelicula_id = v;
-  setSalaId = (v: string) => this.sala_id = v;
+  setPelicula = (v: Pelicula) => this.pelicula = v;
+  setSala = (v: Sala) => this.sala = v;
   setStartTime = (v: Date) => { this.start_time = v; this.touch(); };
   setEndTime = (v: Date) => { this.end_time = v; this.touch(); };
   setFormato = (v: string) => { this.formato = v; this.touch(); };
