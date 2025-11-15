@@ -1,24 +1,20 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PrincipalComponent } from './pages/principal/principal.component';
-import { LoginComponent } from './pages/login/login.component';
-import { PerfilComponent } from './pages/perfil/perfil.component';
-import { AdminComponent } from './pages/admin/admin.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    PrincipalComponent,
-    LoginComponent,
-    PerfilComponent,
-    AdminComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    RouterModule.forRoot([
+      { path: '', component: HomeComponent }
+    ]),
+        HomeComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
