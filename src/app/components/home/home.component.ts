@@ -48,28 +48,37 @@ export class HomeComponent {
     },
     {
       id: 2,
-      title: 'Wicked',
+      title: 'Chainsaw Man: Reze Arc',
       image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=300&h=450&fit=crop',
-      date: '13 de Noviembre de 2025',
-      genre: 'Musical - Fantasia Drama',
-      duration: '162 minutos'
+      date: '23 de Octubre de 2025',
+      genre: 'Acción-Drama',
+      duration: '100 minutos'
     },
     {
       id: 3,
-      title: 'Wicked',
+      title: 'Spider-Man 3',
       image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=300&h=450&fit=crop',
-      date: '13 de Noviembre de 2025',
-      genre: 'Musical - Fantasia Drama',
-      duration: '162 minutos'
+      date: '3 de Mayo de 2007',
+      genre: 'Superheroes - Acción',
+      duration: '144 minutos'
     },
     {
       id: 4,
-      title: 'Wicked',
+      title: 'Scream',
       image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=300&h=450&fit=crop',
-      date: '13 de Noviembre de 2025',
-      genre: 'Musical - Fantasia Drama',
-      duration: '162 minutos'
-    }
+      date: '8 de Enero de 1998',
+      genre: 'Terror',
+      duration: '111 minutos'
+    },
+        {
+      id: 5,
+      title: 'Cowboy Bebop: La pelicula',
+      image: 'https://images.unsplash.com/photo-1594908900066-3f47337549d8?w=300&h=450&fit=crop',
+      date: '1 de Septiembre de 2001',
+      genre: 'Terror',
+      duration: '115 minutos'
+    },
+
   ];
 
   promotions: Promotion[] = [
