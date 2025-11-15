@@ -1,56 +1,148 @@
 classDiagram
 
-class Promocion
+class Promocion{
+- codigo: String
+- nombre: String
+- descripcion: String
+- tipo: PORCENTAJE,MONTO,OTRO
+- valor: Decimal
+- aplicable_a: COMPRA,BOLETO,MEMBRESIA
+- fecha_inicio: DateTime
+- fecha_fin: DateTime
+- activo: Boolean
+- created_at: DateTime
+- updated_at: DateTime
+}
 
-class Cartelera
+class Cartelera{
+- updated_at: DateTime
+}
 
-class Funcion
+class Funcion{
+- pelicula_id: Pelicula
+- sala_id: Sala[]
+- start_time: DateTime
+- end_time: DateTime
+- formato: String            // p. ej. "IMAX", "2D"
+- precio_base: Decimal
+- disponible: Boolean
+- created_at: DateTime
+- updated_at: DateTime
+}
 
-class Pelicula
+class Pelicula{
+- titulo: String
+- sinopsis: Text
+- duracion_min: Int
+- genero: String
+- clasificacion: String
+- poster_url: String
+- created_at: DateTime
+- casting: List
+}
 
-class Cine
+class Cine{
+- nombre: String
+- direccion: String
+- ciudad: String
+- telefono: String?
+}
 
-class Sala
+class Sala{
+- cine: Cine
+- nombre: String              // p. ej. "Sala 5"
+- tipo: String?               // p. ej. "IMAX", "Premium"
+- capacidad: Int
+- plano_url: String?          // vista previa para la UI
+}
 
 class Asiento{
-+ disponible : boolean
+- disponible : boolean
+- sala_id: Sala
+- fila: String
+- numero: Int
+- etiqueta: String?           // p. ej. "A10"
+- tipo_asiento: TipoAsiento
+- coordenadas_preview: JSON?  // opcional, para mostrar mapa
+- activo: Boolean
 }
 
 class TipoAsiento{
 <<Enumerate>>
+- VIP
+- ESTANDAR
+- RECLINABLE
+- ACCESIBLE
+- OTRO
 }
 
 class Reserva{
-- numAsiento : int
+- funcion_id: Funcion;
+- sala: Sala;
+- asientos_etiquetas: string[];   // SOLO strings
+- created_at: Date;
+- expires_at: Date;
+- status: EstadoReserva;
+- expirar():void
 }
 
-class Boleto
+class Boleto{
+- compra_id: string
+- funcion_id: string
+- asiento_id: string
+- usuario_id: string
+- codigo_qr: string
+- precio: Decimal
+- promocion_id: string
+- estado: EnumEMITIDO,CANJEADO,ANULADO
+- fecha_emision: DateTime
+}
 
-class Usuario
+class Usuario{
+- apellido: String
+- telefono: String
+- membresia: Membresia
+- created_at: DateTime
+}
 
 class Membresía{
 <<Enumerate>>
+-INSIDER
+-PREMIERE
+-A_LIST
 }
 
 class Admin
 
-class Compra
+class Compra{
+- reserva_id: Reserva[]           // si procede
+- subtotal: Decimal
+- impuestos: Decimal
+- total: Decimal
+- promociones_aplicadas: Promocion[]  // ids de Promocion
+- estado: EnumPENDIENTE,COMPLETADA,CANCELADA
+- created_at: DateTime
+}
 
 class User{
 <<Interface>>
+- id: UUID
+- email: String
+- contraseña: String
 }
 
-class Sesion{
-<<Interface>>
+class Alertas{
+- titulo: String
+- mensaje: Text
+- tipo: EnumESTRENO,PROMOCION,AVISO
+- dirigida_a: String        // p. ej. "todos", "membresia:ORO", "ciudad:Santiago"
+- created_at: DateTime
 }
-
-class Alertas
 
 Cartelera "1" o-- "0.*" Funcion
 
-Funcion "1..*" *-- "1" Pelicula
-Funcion "0.*" *-- "1" Sala
-Funcion -- Membresía
+Funcion "1..*" *-- "1..*" Pelicula
+Funcion "0.*" o-- "1" Sala
 
 Sala "1.*" o-- "1" Cine
 Sala "1" *-- "1..*" Asiento
@@ -65,12 +157,12 @@ Promocion "0..*" --o "0..*" Compra
 Promocion  --  Membresía
 
 Compra "1.*" --o "1" Usuario
-Compra "1" -- "1..*" Boleto
+Compra "1" o-- "1..*" Boleto
 
 Usuario ..|> User
 Admin ..|> User
-Usuario ..|> Sesion
-Admin ..|> Sesion
+
+Sesion "1" o-- "1" User
 
 Usuario -- Membresía
 

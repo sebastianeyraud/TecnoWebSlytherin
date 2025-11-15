@@ -4,6 +4,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { PrincipalComponent } from './pages/principal/principal.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { ProteccionGuard } from './guards/proteccion.guard';
+import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
   {
@@ -13,15 +15,16 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
-    //canActivate: [proteccionGuard]
   },
   {
     path: 'admin',
-    component: AdminComponent
+    component: AdminComponent,
+    canActivate: [ProteccionGuard,ProteccionAdminGuard]
   },
   {
     path: 'perfil',
-    component: PerfilComponent
+    component: PerfilComponent,
+    canActivate: [ProteccionGuard]
   },
   {
     path: '**',

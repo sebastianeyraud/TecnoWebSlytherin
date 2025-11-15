@@ -2,6 +2,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -25,6 +27,8 @@
     ]
   },
   "angularCompilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
