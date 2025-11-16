@@ -9,8 +9,8 @@
 
 2. **Clonar el repositorio y entrar al proyecto:**
    ```bash
-   git clone <url-del-repo>
-   cd AMC_TecWeb
+   git clone https://github.com/sebastianeyraud/TecnoWebSlytherin.git
+   cd TecnoWebSlytherin
    ```
 
 3. Instalar dependencias
@@ -37,7 +37,7 @@ npx ng version
 
 o
 
-.\node_modules\.bin\ng version
+.\node_modules\\.bin\ng version
 
 (el version puede ser cualquier cosa)
 
