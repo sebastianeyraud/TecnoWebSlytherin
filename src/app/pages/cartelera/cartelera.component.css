@@ -74,7 +74,8 @@
 }
 
 .btn-primary:hover {
-  background: #ffca28;
+  background: var(--burgundy);
+  color: #fff;
 }
 
 .layout {

@@ -4,11 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { PrincipalComponent } from './pages/principal/principal.component';
 import { AdminComponent } from './pages/admin/admin.component';
-import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ProteccionGuard } from './guards/proteccion.guard';
 import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
+import { CarteleraComponent } from './pages/cartelera/cartelera.component';
+import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 
-import { CarteleraComponent } from './cartelera/cartelera.component';
 
 const routes: Routes = [
   {
@@ -25,13 +25,12 @@ const routes: Routes = [
     canActivate: [ProteccionGuard, ProteccionAdminGuard]
   },
   {
-    path: 'perfil',
-    component: PerfilComponent,
-    canActivate: [ProteccionGuard]
-  },
-  {
     path: 'cartelera',
     component: CarteleraComponent
+  },
+  {
+    path: 'pelicula/wicked',
+    component: DetallePeliculaComponent
   },
   {
     path: '**',
