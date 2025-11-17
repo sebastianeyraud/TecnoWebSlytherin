@@ -1,0 +1,78 @@
+classDiagram
+
+class Promocion
+
+class Cartelera
+
+class Funcion
+
+class Pelicula
+
+class Cine
+
+class Sala
+
+class Asiento{
++ disponible : boolean
+}
+
+class TipoAsiento{
+<<Enumerate>>
+}
+
+class Reserva{
+- numAsiento : int
+}
+
+class Boleto
+
+class Usuario
+
+class Membresía{
+<<Enumerate>>
+}
+
+class Admin
+
+class Compra
+
+class User{
+<<Interface>>
+}
+
+class Sesion{
+<<Interface>>
+}
+
+class Alertas
+
+Cartelera "1" o-- "0.*" Funcion
+
+Funcion "1..*" *-- "1" Pelicula
+Funcion "0.*" *-- "1" Sala
+Funcion -- Membresía
+
+Sala "1.*" o-- "1" Cine
+Sala "1" *-- "1..*" Asiento
+
+Asiento -- TipoAsiento
+
+Reserva "1"*--"1" Funcion
+Reserva "1"*--"1" Sala
+Reserva "0..1" --o "0..1" Compra
+
+Promocion "0..*" --o "0..*" Compra
+Promocion  --  Membresía
+
+Compra "1.*" --o "1" Usuario
+Compra "1" -- "1..*" Boleto
+
+Usuario ..|> User
+Admin ..|> User
+Usuario ..|> Sesion
+Admin ..|> Sesion
+
+Usuario -- Membresía
+
+Admin "manda" -- Alertas
+Usuario "recibe" -- Alertas
