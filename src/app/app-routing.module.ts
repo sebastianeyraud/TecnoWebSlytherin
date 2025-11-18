@@ -9,6 +9,7 @@ import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { UsuarioComponent } from './usuario/usuario.component';
+import { MembresiaComponent } from './membresia/membresia.component';
 
 //Guards
 import { ProteccionGuard } from './guards/proteccion.guard';
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'pelicula/wicked', component: DetallePeliculaComponent },
   { path: 'asientos', component: AsientosComponent },
   { path: 'usuario', component: UsuarioComponent },
+  { path: 'membresia', component: MembresiaComponent },
   { path: '**', redirectTo: '' }
 ];
 
