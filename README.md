@@ -1,3 +1,5 @@
+**Modificar la ventana principal en footer y header**
+
 # 🧩 Indicaciones
 
 1. **Instalar Volta (si no lo tienen):**  
