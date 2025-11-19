@@ -18,6 +18,34 @@
   position: relative;
 }
 
+.hero-arrows {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.hero-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 18px;
+  line-height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-arrow:hover {
+  background: rgba(0,0,0,0.8);
+}
+
 .hero-overlay {
   background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.2));
   height: 100%;

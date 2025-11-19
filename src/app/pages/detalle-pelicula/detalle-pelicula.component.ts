@@ -12,8 +12,14 @@ export class DetallePeliculaComponent implements AfterViewInit {
 
   selectedTab: 'info' | 'horario' = 'info';
 
+  isFavorite = false;
+
   selectTab(tab: 'info' | 'horario') {
     this.selectedTab = tab;
+  }
+
+  toggleFavorite() {
+    this.isFavorite = !this.isFavorite;
   }
 
   @ViewChild('actorTrack') actorTrack!: ElementRef<HTMLDivElement>;
@@ -28,18 +34,16 @@ export class DetallePeliculaComponent implements AfterViewInit {
     { nombre: 'JEFF GOLDBLUM',      foto: 'assets/jg.jpeg' },
     { nombre: 'BOWEN YANG',         foto: 'assets/by.jpeg' },
     { nombre: 'PETER DINKLAGE',     foto: 'assets/pd.jpeg' },
-    { nombre: 'X1',     foto: 'assets/xd.jpeg' },
-    { nombre: 'X2',     foto: 'assets/uwu.jpeg' },
+    { nombre: 'X1',                 foto: 'assets/xd.jpeg' },
+    { nombre: 'X2',                 foto: 'assets/uwu.jpeg' },
   ];
 
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
 
   scrollActors(direction: number) {
     if (!this.actorTrack) return;
 
     const container = this.actorTrack.nativeElement;
-
     const firstCard = container.firstElementChild as HTMLElement | null;
     const step = firstCard ? firstCard.clientWidth + 12 : 140;
 
