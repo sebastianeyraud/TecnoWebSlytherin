@@ -55,4 +55,36 @@ export class Pelicula {
   // Añadir actores
   addActor = (actor: string) => this.casting.push(actor);
   addFuncion = (f:Funcion) => this.funciones.push(f);
+
+  // -----------JSON---------------------------
+
+  toJSON() {
+    return {
+      titulo: this.titulo,
+      funciones: this.funciones, // si Funciones tiene toJSON, conviene mapear
+      sinopsis: this.sinopsis,
+      duracion_min: this.duracion_min,
+      genero: this.genero,
+      clasificacion: this.clasificacion,
+      poster_url: this.poster_url,
+      created_at: this.created_at.toISOString(),
+      casting: this.casting
+    };
+  }
+
+  // Crear instancia de Pelicula a partir de JSON
+  static fromJSON(obj: any): Pelicula {
+    const p = new Pelicula(
+      obj.titulo,
+      obj.sinopsis,
+      obj.duracion_min,
+      obj.genero,
+      obj.clasificacion,
+      obj.poster_url,
+      obj.casting ?? []
+    );
+    p.funciones = obj.funciones ?? [];
+    p.created_at = obj.created_at ? new Date(obj.created_at) : new Date();
+    return p;
+  }
 }
