@@ -1,14 +1,15 @@
+// import { Observable, of } from 'rxjs'; El profe lo usó, pero creo que si vamos de login a principal siempre, no es necesario
 import { Injectable } from '@angular/core';
 import { User } from '../models/user';
-import { Usuario } from '../models/usuario.model';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly STORAGE_KEY = 'myapp_session';
+
   private credenciales = new Map<string, string[]>([
-    ['user', ['user', 'usuario']],
+    ['user', ['user', 'user']],
     ['admin', ['admin', 'admin']],
   ]);
 
@@ -16,97 +17,48 @@ export class AuthService {
 
   login(user: User): boolean {
     const datos = this.credenciales.get(user.email);
-    if (!datos) {
-      console.log('No registrado');
-      return false;
-    }
 
-    const [passwordStored, role] = datos;
-    if (user.password !== passwordStored) {
-      console.log('Contraseña incorrecta');
-      return false;
-    }
+    if (datos) {
+      const [contraseña, rol] = datos;
 
-    if (role === 'admin') {
-      const payload = { email: user.email, role };
-      const token = btoa(JSON.stringify(payload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
-    } else {
-      let safePayload: any = null;
-      if (user instanceof Usuario && typeof (user as any).toJSON === 'function') {
-        safePayload = (user as any).toJSON();
+      if (user.password === contraseña) {
+        if (rol === 'admin') {
+          console.log('Admin autenticado');
+          // Crear token y guardar sesión
+          let token: string = btoa(user.email + user.password);
+          sessionStorage.setItem('token',token);
+          return true;
+        } else {
+          console.log('Usuario normal autenticado');
+          // Crear token y guardar sesión
+          let token: string = btoa(user.email + user.password);
+          sessionStorage.setItem('token',token);
+          return true;
+        }
       } else {
-        safePayload = {
-          nombre: (user as any).nombre ?? user.email.split('@')[0],
-          email: user.email,
-          rol: (user as any).rol ?? 'usuario',
-        };
+        console.log('Contraseña incorrecta');
       }
-
-      const token = btoa(JSON.stringify(safePayload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
+    } else {
+      console.log('No registrado');
     }
-
     return false;
   }
 
-  registrar(user: User): void {
-    if (this.credenciales.has(user.email)) {
-      throw new Error('Usuario ya registrado');
-    }
-
-    // Guardado en credenciales "fake"
-    this.credenciales.set(user.email, [user.password, user.rol || 'user']);
-
-    // -----------------------------
-    // GUARDAR EN LA LISTA DE USUARIOS
-    // -----------------------------
-    const raw = localStorage.getItem('usuarios');
-    const arr = raw ? JSON.parse(raw) : [];
-
-    // guardar en formato JSON, no como clase
-    arr.push((user as any).toJSON ? (user as any).toJSON() : user);
-
-    localStorage.setItem('usuarios', JSON.stringify(arr));
+  public registrar(user: User): void {
+    this.credenciales.set(user.email, [user.password, user.rol]);
   }
 
-  getAllUsuarios(): any[] {
-    const raw = localStorage.getItem('usuarios');
-    return raw ? JSON.parse(raw) : [];
-  }
-
-  logout(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  isLogged(): boolean {
-    return !!localStorage.getItem(this.STORAGE_KEY);
-  }
-
-  isAdmin(): boolean {
-    const token = localStorage.getItem(this.STORAGE_KEY);
-    if (!token) return false;
-    try {
-      const decoded = atob(token);
-      const obj = JSON.parse(decoded) as { email?: string; role?: string };
-      return obj.role === 'admin';
-    } catch (e) {
-      console.warn('Token inválido', e);
+  public isLogged():boolean{
+    if(sessionStorage.getItem('token')){
+        return true;
+      }
+      console.log('no hay nadie sesionado iniciao')
       return false;
-    }
-  }
-
-  //Debería ir acá?
-  getCurrentUser(): any | null {
-    const token = localStorage.getItem(this.STORAGE_KEY);
-    if (!token) return null;
-    try {
-      const decoded = atob(token);
-      return JSON.parse(decoded);
-    } catch {
-      return null;
-    }
   }
 }
+
+// Luego en login, hacer una clase simple para 'probar usuario' y aquí comparamos
+// si pasa la autenticación, crear la instancia de cada uno guardar en localstorage
+// después de eso pruebo con login
+
+// si funciona, paso a ver los guards
