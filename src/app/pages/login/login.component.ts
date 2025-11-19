@@ -31,13 +31,13 @@ export class LoginComponent {
     }
 
     const usuario = this.formularioLogin.value as User;
-    const ok = this.authService.login(usuario);
-
-    if (ok) {
-      this.router.navigateByUrl('');
-    } else {
-      alert('Credenciales incorrectas');
-    }
+    this.authService.login(usuario).then(ok => {
+      if (ok) {
+        this.router.navigateByUrl('');
+      } else {
+        alert('Credenciales incorrectas');
+      }
+    });
   }
 
 }

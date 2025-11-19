@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-detalle-pelicula',
@@ -6,6 +7,8 @@ import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
   styleUrls: ['./detalle-pelicula.component.css']
 })
 export class DetallePeliculaComponent implements AfterViewInit {
+
+  constructor(public auth: AuthService) {}
 
   selectedTab: 'info' | 'horario' = 'info';
 

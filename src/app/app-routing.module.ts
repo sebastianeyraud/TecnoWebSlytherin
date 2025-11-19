@@ -32,8 +32,8 @@ const routes: Routes = [
     path: 'pelicula/wicked',
     component: DetallePeliculaComponent
   },
-  { path: 'asientos', 
-    component: AsientosComponent 
+  { path: 'asientos',
+    component: AsientosComponent
 
   },
   {

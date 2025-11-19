@@ -18,7 +18,10 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
+    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.8",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
@@ -38,5 +41,18 @@
   },
   "volta": {
     "node": "16.13.0"
-  }
+  },
+  "description": "1. **Instalar Volta (si no lo tienen):**  \r    - Si tienen Chocolatey (opción más sencilla):  \r      ```bash\r      choco install volta -y\r      ```\r    - También pueden ver otras opciones en [https://volta.sh](https://volta.sh)",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastianeyraud/TecnoWebSlytherin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebastianeyraud/TecnoWebSlytherin/issues"
+  },
+  "homepage": "https://github.com/sebastianeyraud/TecnoWebSlytherin#readme"
 }
