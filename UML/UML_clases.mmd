@@ -1,170 +1,237 @@
 classDiagram
 
-class Promocion{
-- codigo: String
-- nombre: String
-- descripcion: String
-- tipo: PORCENTAJE,MONTO,OTRO
-- valor: Decimal
-- aplicable_a: COMPRA,BOLETO,MEMBRESIA
-- fecha_inicio: DateTime
-- fecha_fin: DateTime
-- activo: Boolean
-- created_at: DateTime
-- updated_at: DateTime
+%% ------------------ ENUMS ------------------
+class TipoPromocion {
+  <<enumeration>>
+  PORCENTAJE
+  MONTO
+  OTRO
 }
 
-class Cartelera{
-- updated_at: DateTime
+class AplicableA {
+  <<enumeration>>
+  COMPRA
+  BOLETO
+  MEMBRESIA
 }
 
-class Funcion{
-- pelicula_id: Pelicula
-- sala_id: Sala[]
-- start_time: DateTime
-- end_time: DateTime
-- formato: String            // p. ej. "IMAX", "2D"
-- precio_base: Decimal
-- disponible: Boolean
-- created_at: DateTime
-- updated_at: DateTime
+class EstadoBoleto {
+  <<enumeration>>
+  EMITIDO
+  CANJEADO
+  ANULADO
 }
 
-class Pelicula{
-- titulo: String
-- sinopsis: Text
-- duracion_min: Int
-- genero: String
-- clasificacion: String
-- poster_url: String
-- created_at: DateTime
-- casting: List
+class EstadoCompra {
+  <<enumeration>>
+  PENDIENTE
+  COMPLETADA
+  CANCELADA
 }
 
-class Cine{
-- nombre: String
-- direccion: String
-- ciudad: String
-- telefono: String?
+class EstadoReserva {
+  <<enumeration>>
+  ACTIVA
+  EXPIRADA
+  CANCELADA
+  CONFIRMADA
 }
 
-class Sala{
-- cine: Cine
-- nombre: String              // p. ej. "Sala 5"
-- tipo: String?               // p. ej. "IMAX", "Premium"
-- capacidad: Int
-- plano_url: String?          // vista previa para la UI
+class TipoAsiento {
+  <<enumeration>>
+  VIP
+  ESTANDAR
+  RECLINABLE
+  ACCESIBLE
+  OTRO
 }
 
-class Asiento{
-- disponible : boolean
-- sala_id: Sala
-- fila: String
-- numero: Int
-- etiqueta: String?           // p. ej. "A10"
-- tipo_asiento: TipoAsiento
-- coordenadas_preview: JSON?  // opcional, para mostrar mapa
-- activo: Boolean
+class TipoAlerta {
+  <<enumeration>>
+  ESTRENO
+  PROMOCION
+  AVISO
 }
 
-class TipoAsiento{
-<<Enumerate>>
-- VIP
-- ESTANDAR
-- RECLINABLE
-- ACCESIBLE
-- OTRO
+class Membresia {
+  <<enumeration>>
+  INSIDER
+  PREMIERE
+  A_LIST
+  NONE
 }
 
-class Reserva{
-- funcion_id: Funcion;
-- sala: Sala;
-- asientos_etiquetas: string[];   // SOLO strings
-- created_at: Date;
-- expires_at: Date;
-- status: EstadoReserva;
-- expirar():void
+%% ------------------ CLASES ------------------
+class Promocion {
+  - codigo: string
+  - nombre: string
+  - descripcion: string
+  - tipo: TipoPromocion
+  - valor: number
+  - aplicable_a: AplicableA
+  - fecha_inicio: Date
+  - fecha_fin: Date
+  - activo: boolean
+  - created_at: Date
+  - updated_at: Date
 }
 
-class Boleto{
-- compra_id: string
-- funcion_id: string
-- asiento_id: string
-- usuario_id: string
-- codigo_qr: string
-- precio: Decimal
-- promocion_id: string
-- estado: EnumEMITIDO,CANJEADO,ANULADO
-- fecha_emision: DateTime
+class Cartelera {
+  - updated_at: Date
 }
 
-class Usuario{
-- apellido: String
-- telefono: String
-- membresia: Membresia
-- created_at: DateTime
+class Funcion {
+  - pelicula: Pelicula
+  - sala: Sala
+  - start_time: Date
+  - end_time: Date
+  - formato: string
+  - precio_base: number
+  - disponible: boolean
+  - created_at: Date
+  - updated_at: Date
 }
 
-class Membresía{
-<<Enumerate>>
--INSIDER
--PREMIERE
--A_LIST
+class Pelicula {
+  - titulo: string
+  - funciones: Funcion[]
+  - sinopsis: string
+  - duracion_min: number
+  - genero: string
+  - clasificacion: string
+  - poster_url: string
+  - created_at: Date
+  - casting: string[]
 }
 
-class Admin
-
-class Compra{
-- reserva_id: Reserva[]           // si procede
-- subtotal: Decimal
-- impuestos: Decimal
-- total: Decimal
-- promociones_aplicadas: Promocion[]  // ids de Promocion
-- estado: EnumPENDIENTE,COMPLETADA,CANCELADA
-- created_at: DateTime
+class Cine {
+  - nombre: string
+  - direccion: string
+  - ciudad: string
+  - telefono?: string
 }
 
-class User{
-<<Interface>>
-- id: UUID
-- email: String
-- contraseña: String
+class Sala {
+  - cine: Cine
+  - nombre: string
+  - tipo?: string
+  - capacidad: number
+  - plano_url?: string
 }
 
-class Alertas{
-- titulo: String
-- mensaje: Text
-- tipo: EnumESTRENO,PROMOCION,AVISO
-- dirigida_a: String        // p. ej. "todos", "membresia:ORO", "ciudad:Santiago"
-- created_at: DateTime
+class Asiento {
+  - disponible: boolean
+  - sala: Sala
+  - fila: string
+  - numero: number
+  - etiqueta?: string
+  - tipo_asiento: TipoAsiento
+  - coordenadas_preview?: any
+  - activo: boolean
 }
 
-Cartelera "1" o-- "0.*" Funcion
+class Reserva {
+  - funcion_id: Funcion
+  - sala: Sala
+  - asientos_etiquetas: string[]
+  - created_at: Date
+  - expires_at: Date
+  - status: EstadoReserva
+}
 
-Funcion "1..*" *-- "1..*" Pelicula
-Funcion "0.*" o-- "1" Sala
+class Boleto {
+  - compra_id: string
+  - funcion_id: string
+  - asiento_id: string
+  - usuario_id: string
+  - precio: number
+  - promocion_id?: string
+  - estado: EstadoBoleto
+  - fecha_emision: Date
+}
 
-Sala "1.*" o-- "1" Cine
+class Compra {
+  - reserva_id: Reserva[]
+  - subtotal: number
+  - impuestos: number
+  - total: number
+  - promociones_aplicadas: Promocion[]
+  - estado: EstadoCompra
+  - created_at: Date
+}
+
+class User {
+  <<interface>>
+  - nombre: string
+  - email: string
+  - password: string
+  - rol: 'usuario' | 'admin'
+}
+
+class Admin {
+  - nombre: string
+  - email: string
+  - password: string
+  - rol: "usuario" | "admin"
+}
+
+class Alerta {
+  - titulo: string
+  - mensaje: string
+  - tipo: TipoAlerta
+  - dirigida_a: string
+  - created_at: Date
+}
+
+class Sesion {
+  - id: UUID
+  - token: string
+  - created_at: Date
+  - expires_at: Date
+}
+
+class Usuario {
+  - nombre: string
+  - email: string
+  - password: string
+  - rol: 'usuario' | 'admin'
+  - apellido?: string
+  - telefono?: string
+  - membresia: Membresia
+  - created_at: Date
+  - historial: Compra[]
+  - notificaciones: Alerta[]
+}
+
+%% ------------------ RELACIONES ------------------
+Cartelera "1" o-- "0..*" Funcion
+Funcion "0..1" o-- "1" Pelicula
+Funcion "0..1" o-- "1" Sala
+Sala "1..*" o-- "1" Cine
 Sala "1" *-- "1..*" Asiento
-
 Asiento -- TipoAsiento
-
-Reserva "1"*--"1" Funcion
-Reserva "1"*--"1" Sala
+Reserva "1" *-- "1" Funcion
+Reserva "1" *-- "1" Sala
 Reserva "0..1" --o "0..1" Compra
-
 Promocion "0..*" --o "0..*" Compra
-Promocion  --  Membresía
-
-Compra "1.*" --o "1" Usuario
+Promocion -- Membresia
+Compra "1..*" --o "1" Usuario
 Compra "1" o-- "1..*" Boleto
-
 Usuario ..|> User
 Admin ..|> User
-
 Sesion "1" o-- "1" User
+Usuario -- Membresia
+Admin "manda" -- Alerta
+Usuario "recibe" -- Alerta
+Pelicula "0..*" o-- "0..*" Funcion
 
-Usuario -- Membresía
-
-Admin "manda" -- Alertas
-Usuario "recibe" -- Alertas
+%% ------------------ USO DE ENUMS ------------------
+Promocion --> TipoPromocion
+Promocion --> AplicableA
+Boleto --> EstadoBoleto
+Reserva --> EstadoReserva
+Compra --> EstadoCompra
+Asiento --> TipoAsiento
+Alerta --> TipoAlerta
+Usuario --> Membresia
+Promocion --> Membresia
