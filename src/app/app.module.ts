@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,7 +10,7 @@ import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
 
-import { PrincipalComponent } from './pages/principal/principal.component';
+import { PrincipalComponent } from './pages/principal/principal.component'; // standalone
 import { LoginComponent } from './pages/login/login.component';
 import { AdminComponent } from './pages/admin/admin.component';
 
@@ -24,18 +26,22 @@ import { MembresiaComponent } from './membresia/membresia.component';
     CarteleraComponent,
     HeaderComponent,
     FooterComponent,
-    PrincipalComponent,
     LoginComponent,
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
     UsuarioComponent,
     MembresiaComponent
+    // ❌ PrincipalComponent NO va aquí porque es standalone
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+
+    // ✔ Los standalone se IMPORTAN aquí
+    PrincipalComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
