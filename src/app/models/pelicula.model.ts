@@ -22,7 +22,7 @@ export class Pelicula {
     casting: string[] = []
   ) {
     this.titulo = titulo;
-    this.funciones = [];
+    this.funciones = funciones ?? []; // <- ahora sí usa el parámetro
     this.sinopsis = sinopsis;
     this.duracion_min = duracion_min;
     this.genero = genero;
@@ -32,7 +32,6 @@ export class Pelicula {
     this.created_at = new Date();
   }
 
-  // ---------- GETTERS (1 línea) ----------
   getTitulo = () => this.titulo;
   getFunciones = () => this.funciones;
   getSinopsis = () => this.sinopsis;
@@ -43,7 +42,6 @@ export class Pelicula {
   getCreatedAt = () => this.created_at;
   getCasting = () => this.casting;
 
-  // ---------- SETTERS (1 línea) ----------
   setTitulo = (v: string) => this.titulo = v;
   setSinopsis = (v: string) => this.sinopsis = v;
   setDuracionMin = (v: number) => this.duracion_min = v;
@@ -52,16 +50,13 @@ export class Pelicula {
   setPosterUrl = (v: string) => this.poster_url = v;
   setCasting = (v: string[]) => this.casting = v;
 
-  // Añadir actores
   addActor = (actor: string) => this.casting.push(actor);
-  addFuncion = (f:Funcion) => this.funciones.push(f);
-
-  // -----------JSON---------------------------
+  addFuncion = (f: Funcion) => this.funciones.push(f);
 
   toJSON() {
     return {
       titulo: this.titulo,
-      funciones: this.funciones, // si Funciones tiene toJSON, conviene mapear
+      funciones: this.funciones,
       sinopsis: this.sinopsis,
       duracion_min: this.duracion_min,
       genero: this.genero,
@@ -72,19 +67,23 @@ export class Pelicula {
     };
   }
 
-  // Crear instancia de Pelicula a partir de JSON
   static fromJSON(obj: any): Pelicula {
+    const funciones = obj.funciones ?? [];
+    const casting = obj.casting ?? [];
+
     const p = new Pelicula(
       obj.titulo,
+      funciones,
       obj.sinopsis,
       obj.duracion_min,
       obj.genero,
       obj.clasificacion,
       obj.poster_url,
-      obj.casting ?? []
+      casting
     );
-    p.funciones = obj.funciones ?? [];
+
     p.created_at = obj.created_at ? new Date(obj.created_at) : new Date();
+
     return p;
   }
 }

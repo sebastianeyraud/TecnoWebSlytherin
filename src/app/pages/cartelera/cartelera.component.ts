@@ -29,29 +29,34 @@ export class CarteleraComponent implements OnInit {
 
   aplicarFiltros() {
     this.peliculasFiltradas = this.peliculas.filter(p => {
-      // Tiempo
-      if (this.filtro.tiempo && !p.getDuracionMin().toString().includes(this.filtro.tiempo)) return false;
+      if (this.filtro.tiempo && !p.getDuracionMin().toString().includes(this.filtro.tiempo)) {
+        return false;
+      }
 
-      // Edad
-      if (this.filtro.edad && this.filtro.edad !== 'Todas las edades' && p.getClasificacion() !== this.filtro.edad) return false;
+      if (this.filtro.edad && this.filtro.edad !== 'Todas las edades' && p.getClasificacion() !== this.filtro.edad) {
+        return false;
+      }
 
-      // Categoría / género
-      if (this.filtro.categoria && !p.getGenero().toLowerCase().includes(this.filtro.categoria.toLowerCase())) return false;
+      if (this.filtro.categoria && !p.getGenero().toLowerCase().includes(this.filtro.categoria.toLowerCase())) {
+        return false;
+      }
 
-      // Casting
       if (this.filtro.casting) {
-        const encontrado = p.getCasting().some(a => a.toLowerCase().includes(this.filtro.casting!.toLowerCase()));
+        const encontrado = p.getCasting().some(a =>
+          a.toLowerCase().includes(this.filtro.casting!.toLowerCase())
+        );
         if (!encontrado) return false;
       }
 
-      // Precio base (si tu película tiene varias funciones con precios)
       if (this.filtro.precioMin !== undefined || this.filtro.precioMax !== undefined) {
         const precios = p.getFunciones().map(f => f.getPrecioBase());
-        const minPrecio = Math.min(...precios);
-        const maxPrecio = Math.max(...precios);
+        if (precios.length > 0) {
+          const minPrecio = Math.min(...precios);
+          const maxPrecio = Math.max(...precios);
 
-        if (this.filtro.precioMin !== undefined && maxPrecio < this.filtro.precioMin) return false;
-        if (this.filtro.precioMax !== undefined && minPrecio > this.filtro.precioMax) return false;
+          if (this.filtro.precioMin !== undefined && maxPrecio < this.filtro.precioMin) return false;
+          if (this.filtro.precioMax !== undefined && minPrecio > this.filtro.precioMax) return false;
+        }
       }
 
       return true;

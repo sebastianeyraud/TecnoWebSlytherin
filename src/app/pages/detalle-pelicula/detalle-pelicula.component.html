@@ -1,4 +1,5 @@
-<div class="detalle-page">
+<!-- VISTA USUARIO (cuando se NO es admin) -->
+<div class="detalle-page" *ngIf="!auth.isAdmin(); else adminDetalle">
 
   <section class="hero-detalle">
     <div class="hero-container">
@@ -17,12 +18,13 @@
               <div class="hero-icons">
 
                 <button 
-                class="icon-btn"
-                [class.selected]="isFavorite"
-                (click)="toggleFavorite()"
-                aria-label="Añadir a favoritos">
-                {{ isFavorite ? '♥' : '♡' }}
-              </button>
+                  class="icon-btn"
+                  [class.selected]="isFavorite"
+                  (click)="toggleFavorite()"
+                  aria-label="Añadir a favoritos">
+                  {{ isFavorite ? '♥' : '♡' }}
+                </button>
+
                 <button class="icon-btn" aria-label="Compartir">➦</button>
               </div>
             </div>
@@ -199,14 +201,29 @@
 
 </div>
 
-<!--
-<div *ngIf="auth.isAdmin(); else usuarioNormal">
-  <h1>Vista de admin</h1>
-  <p>Aquí puedes editar o gestionar contenido</p>
-</div>
-
-<ng-template #usuarioNormal>
-  <h1>Vista de usuario</h1>
-  <p>Solo puedes ver contenido limitado</p>
+<!-- VISTA ADMIN (cuando auth.isAdmin() es true) -->
+<ng-template #adminDetalle>
+  <div class="detalle-page">
+    <section class="hero-detalle">
+      <div class="hero-container">
+        <div class="hero-left">
+          <div class="hero-card">
+            <div class="hero-body">
+              <h1 class="hero-title">Panel de administrador</h1>
+              <p class="hero-meta">
+                Aquí podrías mostrar opciones para editar la película, cambiar sinopsis, actores, horarios, etc.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="trailer-wrapper">
+            <p class="trailer-label">
+              Contenido exclusivo para admins
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </ng-template>
--->
