@@ -1,0 +1,89 @@
+/* 1. Estilos del Contenedor Principal (Fondo Oscuro) */
+.memberships-container {
+    background-color: #1c4447; /* El color verde azulado oscuro */
+    min-height: 100vh;
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2. Estilos para la Disposición de las Tarjetas (Grid o Flex) */
+.card-grid {
+    display: flex;
+    gap: 20px; /* Espacio entre las tarjetas */
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* 3. Estilos Base para Todas las Tarjetas */
+.membership-card {
+    flex: 1; /* Permite que las tres tarjetas tengan el mismo ancho */
+    padding: 30px;
+    color: white; /* Texto blanco para todos los fondos de color */
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    min-height: 450px; /* Altura mínima para que sean uniformes */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 4. Estilos Específicos de Color */
+.blue-bg {
+    background-color: #72a8d3; /* Azul claro para Insider */
+}
+.yellow-bg {
+    background-color: #f7d56e; /* Amarillo mostaza para Premiere */
+    color: #333; /* Cambiar el color del texto a oscuro para el fondo claro */
+}
+.red-bg {
+    background-color: #d33c3c; /* Rojo para A-List */
+}
+
+/* 5. Estilos del Encabezado (Título y Botón 'Unite') */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 5px;
+}
+
+.header h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.join-btn {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* 6. Estilos de Subtítulos y Contenido */
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 300;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.5); /* Línea divisoria semitransparente */
+    margin-bottom: 20px;
+}
+
+.yellow-bg hr {
+    border-top: 1px solid rgba(0, 0, 0, 0.2); /* Línea divisoria oscura para el fondo amarillo */
+}
+
+.description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}

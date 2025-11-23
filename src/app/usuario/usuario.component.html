@@ -1,32 +1,29 @@
-<div class="usuario-container">
-    <h2>Información del Usuario</h2>
-    
-    <form>
-    <div class="form-group">
-        <label for="nombre">Nombre de usuario:</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre">
-    </div>
+<div class="login-container">
+    <div class="login-card">
+        <h2 class="title">Login</h2>
+        <hr>
 
-    <div class="form-group">
-        <label for="rut">RUT:</label>
-        <input type="text" id="rut" name="rut" placeholder="Ej: 12.345.678-9">
-    </div>
+        <form class="login-form">
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
 
-    <div class="form-group">
-        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fechaNacimiento" name="fechaNacimiento">
-    </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
 
-    <div class="form-group">
-        <label for="genero">Género:</label>
-        <select id="genero" name="genero">
-            <option value="">Seleccione</option>
-            <option value="masculino">Masculino</option>
-            <option value="femenino">Femenino</option>
-            <option value="otro">Otro</option>
-        </select>
-    </div>
+            <p class="info-text">
+                ¿Aún no eres miembro? Únete ahora y empieza a disfrutar de ahorros, recompensas y mucho más en el cine.
+                ¿Ya te uniste a AMC Stubs en un cine? Crea tu cuenta para iniciar sesión.
+            </p>
 
-    <button type="submit">Guardar</button>
-    </form>
+            <div class="action-row">
+                <button type="submit" class="ingresar-btn">Ingresar</button>
+            </div>
+        </form>
+    </div>
 </div>
