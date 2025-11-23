@@ -1,43 +1,43 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup} from '@angular/forms';
-import { Router } from '@angular/router';
-import { User } from 'src/app/models/user';
-import { AuthService } from 'src/app/services/auth.service';
-
+import { Component, OnInit } from '@angular/core';
+// Asegúrate de que la ruta al servicio sea correcta
+import { AuthService } from '../../services/auth.service'; 
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: 'app-login',                    // Antes: app-usuario
+  templateUrl: './login.component.html',    // Antes: ./usuario.component.html
+  styleUrls: ['./login.component.css']      // Antes: ./usuario.component.css
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit { // Antes: UsuarioComponent
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  // Objeto para vincular a los inputs del formulario
+  loginData = {
+    email: '',
+    password: ''
+  };
+  loginError = false;
 
-  public formularioLogin: FormGroup = new
-  FormGroup({
-    email: new FormControl(null),
-    password: new FormControl(null)
-  })
+  constructor(private authService: AuthService) { }
 
-  public iniciarSesion():void{
-    if (this.formularioLogin.invalid) {
-      console.log('Está malo el formulario')
-      this.formularioLogin.markAllAsTouched();
-      return;
-    }
-
-    const usuario = this.formularioLogin.value as User;
-    const ok = this.authService.login(usuario);
-
-    if (ok) {
-      this.router.navigateByUrl('');
-    } else {
-      alert('Credenciales incorrectas');
+  ngOnInit(): void {
+    // Si ya tiene sesión activa, redirigir inmediatamente (opcional)
+    if (this.authService.isLoggedIn()) {
+      // La redirección se puede manejar con un Guard o aquí
     }
   }
 
+  /**
+   * Envía las credenciales al AuthService.
+   */
+  onSubmit(): void {
+    this.loginError = false;
+    
+    // Llamar al servicio de autenticación pasando email y password por separado
+    this.authService.login(this.loginData.email, this.loginData.password)
+      .subscribe(success => {
+        if (!success) {
+          this.loginError = true;
+          // El servicio se encarga de la navegación si es exitoso
+        }
+      });
+  }
 }

@@ -3,18 +3,22 @@
         <h2 class="title">Login</h2>
         <hr>
 
-        <form class="login-form">
+        <form class="login-form"(ngSubmit)="onSubmit()">
             <div class="form-row">
                 <div class="input-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" [(ngModel)]="loginData.email" required>
                 </div>
 
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required>
                 </div>
             </div>
+
+            <p *ngIf="loginError" style="color: red; text-align: center; margin-bottom: 15px;">
+                ¡Error! Email o Contraseña incorrectos.
+            </p>
 
             <p class="info-text">
                 ¿Aún no eres miembro? Únete ahora y empieza a disfrutar de ahorros, recompensas y mucho más en el cine.

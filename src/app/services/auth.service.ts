@@ -1,112 +1,55 @@
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
-import { Usuario } from '../models/usuario.model';
+import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+// Credenciales y Token Ficticios para la simulación
+const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibG9naW4tc2luLWRiIiwiaWF0IjoxNjU2Nzg5MDc5fQ.ABCD123456';
+const MOCK_EMAIL = 'admin@cine.com';
+const MOCK_PASS = '123456';
+const TOKEN_KEY = 'auth_token';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly STORAGE_KEY = 'myapp_session';
-  private credenciales = new Map<string, string[]>([
-    ['user', ['user', 'usuario']],
-    ['admin', ['admin', 'admin']],
-  ]);
 
-  constructor() {}
+  constructor(private router: Router) {
+    // Al iniciar, verificar si ya hay un token guardado
+  }
 
-  login(user: User): boolean {
-    const datos = this.credenciales.get(user.email);
-    if (!datos) {
-      console.log('No registrado');
-      return false;
-    }
-
-    const [passwordStored, role] = datos;
-    if (user.password !== passwordStored) {
-      console.log('Contraseña incorrecta');
-      return false;
-    }
-
-    if (role === 'admin') {
-      const payload = { email: user.email, role };
-      const token = btoa(JSON.stringify(payload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
+  /**
+   * Simula el proceso de Login y generación de Token
+   */
+  login(email: string, password: string): Observable<boolean> {
+    // 1. SIMULACIÓN DE VERIFICACIÓN DE CREDENCIALES
+    if (email === MOCK_EMAIL && password === MOCK_PASS) {
+      // 2. Si las credenciales son válidas, guardar el token y redirigir
+      return of(true).pipe(
+        tap(() => {
+          localStorage.setItem(TOKEN_KEY, MOCK_TOKEN);
+          // Redirigir a la página principal o protegida
+          this.router.navigate(['/membresias']); 
+        })
+      );
     } else {
-      let safePayload: any = null;
-      if (user instanceof Usuario && typeof (user as any).toJSON === 'function') {
-        safePayload = (user as any).toJSON();
-      } else {
-        safePayload = {
-          nombre: (user as any).nombre ?? user.email.split('@')[0],
-          email: user.email,
-          rol: (user as any).rol ?? 'usuario',
-        };
-      }
-
-      const token = btoa(JSON.stringify(safePayload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
+      // 3. Login fallido
+      return of(false); 
     }
-
-    return false;
   }
 
-  registrar(user: User): void {
-    if (this.credenciales.has(user.email)) {
-      throw new Error('Usuario ya registrado');
-    }
-
-    // Guardado en credenciales "fake"
-    this.credenciales.set(user.email, [user.password, user.rol || 'user']);
-
-    // -----------------------------
-    // GUARDAR EN LA LISTA DE USUARIOS
-    // -----------------------------
-    const raw = localStorage.getItem('usuarios');
-    const arr = raw ? JSON.parse(raw) : [];
-
-    // guardar en formato JSON, no como clase
-    arr.push((user as any).toJSON ? (user as any).toJSON() : user);
-
-    localStorage.setItem('usuarios', JSON.stringify(arr));
+  /**
+   * Comprueba si existe un token válido almacenado.
+   */
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem(TOKEN_KEY);
   }
 
-  getAllUsuarios(): any[] {
-    const raw = localStorage.getItem('usuarios');
-    return raw ? JSON.parse(raw) : [];
-  }
-
+  /**
+   * Cierra la sesión: elimina el token y redirige a login.
+   */
   logout(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  isLogged(): boolean {
-    return !!localStorage.getItem(this.STORAGE_KEY);
-  }
-
-  isAdmin(): boolean {
-    const token = localStorage.getItem(this.STORAGE_KEY);
-    if (!token) return false;
-    try {
-      const decoded = atob(token);
-      const obj = JSON.parse(decoded) as { email?: string; role?: string };
-      return obj.role === 'admin';
-    } catch (e) {
-      console.warn('Token inválido', e);
-      return false;
-    }
-  }
-
-  //Debería ir acá?
-  getCurrentUser(): any | null {
-    const token = localStorage.getItem(this.STORAGE_KEY);
-    if (!token) return null;
-    try {
-      const decoded = atob(token);
-      return JSON.parse(decoded);
-    } catch {
-      return null;
-    }
+    localStorage.removeItem(TOKEN_KEY);
+    this.router.navigate(['/login']);
   }
 }
