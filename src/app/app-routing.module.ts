@@ -18,13 +18,13 @@ import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
   { path: '', component: PrincipalComponent },
-  { path: 'login', component: UsuarioComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'admin', component: AdminComponent, canActivate: [ProteccionGuard, ProteccionAdminGuard] },
   { path: 'cartelera', component: CarteleraComponent},
   { path: 'pelicula/wicked', component: DetallePeliculaComponent },
   { path: 'asientos', component: AsientosComponent },
   { path: 'usuario', component: UsuarioComponent },
-  { path: 'membresias', component: MembresiaComponent, canActivate: [AuthGuard] }, 
+  { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] }, 
   { path: '', redirectTo: '/membresias', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];

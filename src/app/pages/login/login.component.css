@@ -1,0 +1,101 @@
+/* 1. Contenedor principal y fondo (asumiendo que tienes una imagen) */
+.login-container {
+    /* 1. Capa de color semitransparente (rgba)
+       2. La URL de la imagen (usando la ruta web correcta: /assets/) */
+    background-image: 
+        linear-gradient(rgba(28, 68, 71, 0.7), rgba(85, 85, 85, 0.7)), /* Gris oscuro con 70% de opacidad */
+        url('/assets/amcbg.jpg'); /* La imagen de fondo */
+    
+    /* Propiedades de la Imagen (se aplican a todas las capas) */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    
+    /* Propiedades de Diseño (se mantienen igual) */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px;
+    box-sizing: border-box;
+    /* Ya no es necesario el background-color: rgba(85, 85, 85, 0.7); por separado */
+}
+
+/* 2. Tarjeta de Login (El cuadro blanco) */
+.login-card {
+    background-color: white;
+    padding: 40px 60px;
+    border-radius: 5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 800px; /* Ancho máximo similar al de la imagen */
+    width: 100%;
+}
+
+/* 3. Estilos de Títulos y Líneas */
+.title {
+    font-size: 32px;
+    font-weight: 300; /* Fuente delgada */
+    margin-bottom: 5px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin-bottom: 30px;
+}
+
+/* 4. Estilos de Campos de Formulario */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px; /* Espacio entre Email y Password */
+    margin-bottom: 20px;
+}
+
+.input-group {
+    flex: 1; /* Permite que ambos campos ocupen el mismo espacio */
+}
+
+.input-group label {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-weight: 400;
+}
+
+.input-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid black; /* Estilo de línea debajo del campo */
+    padding: 5px 0;
+    font-size: 16px;
+    outline: none;
+}
+
+/* 5. Texto de Información */
+.info-text {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #555;
+    margin-top: 30px;
+}
+
+/* 6. Botón de Ingreso (Alineado a la derecha) */
+.action-row {
+    display: flex;
+    justify-content: flex-end; /* Alinea el botón a la derecha */
+    margin-top: 20px;
+}
+
+.ingresar-btn {
+    background: none;
+    border: 1px solid #ccc; /* Borde gris claro */
+    padding: 8px 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.ingresar-btn:hover {
+    background-color: #f0f0f0;
+}

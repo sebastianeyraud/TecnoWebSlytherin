@@ -3,51 +3,48 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-// Credenciales y Token Ficticios para la simulación
-const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibG9naW4tc2luLWRiIiwiaWF0IjoxNjU2Nzg5MDc5fQ.ABCD123456';
-const MOCK_EMAIL = 'admin@cine.com';
-const MOCK_PASS = '123456';
 const TOKEN_KEY = 'auth_token';
+const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsIn...'; // Token genérico
+
+// 👇 CAMBIO 1: Creamos una LISTA de usuarios válidos
+const USUARIOS_VALIDOS = [
+  { email: 'guillermo.pino@cine.com', pass: '123guillermo', nombre: 'Guillermo Pino' },
+  { email: 'tomas.carvajal@cine.com',  pass: '123tomas', nombre: 'Tomas Carvajal' },
+  { email: 'sebastain.eyraud@cine.com', pass: '123sebastian', nombre: 'Sebastian Eyraud' },
+  { email: 'mayling.alvarez@demo.com',  pass: '123mayling', nombre: 'Mayling Alvarez' },
+  { email: 'hilda.albarracin@cine.com', pass: '123hilda', nombre: 'Hilda Albarracin' }
+];
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private router: Router) {
-    // Al iniciar, verificar si ya hay un token guardado
-  }
+  constructor(private router: Router) { }
 
-  /**
-   * Simula el proceso de Login y generación de Token
-   */
   login(email: string, password: string): Observable<boolean> {
-    // 1. SIMULACIÓN DE VERIFICACIÓN DE CREDENCIALES
-    if (email === MOCK_EMAIL && password === MOCK_PASS) {
-      // 2. Si las credenciales son válidas, guardar el token y redirigir
+    
+    // 👇 CAMBIO 2: Buscamos si existe un usuario que coincida con AMBOS datos
+    const usuarioEncontrado = USUARIOS_VALIDOS.find(u => u.email === email && u.pass === password);
+
+    // Si usuarioEncontrado tiene datos, es verdadero. Si es undefined, es falso.
+    if (usuarioEncontrado) {
       return of(true).pipe(
         tap(() => {
           localStorage.setItem(TOKEN_KEY, MOCK_TOKEN);
-          // Redirigir a la página principal o protegida
-          this.router.navigate(['/membresias']); 
+          console.log(`Bienvenido, ${usuarioEncontrado.nombre}`); // Opcional: ver quién entró
+          this.router.navigate(['/membresia']);
         })
       );
     } else {
-      // 3. Login fallido
-      return of(false); 
+      return of(false); // No se encontró nadie con ese email Y esa contraseña
     }
   }
 
-  /**
-   * Comprueba si existe un token válido almacenado.
-   */
   isLoggedIn(): boolean {
     return !!localStorage.getItem(TOKEN_KEY);
   }
 
-  /**
-   * Cierra la sesión: elimina el token y redirige a login.
-   */
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     this.router.navigate(['/login']);
