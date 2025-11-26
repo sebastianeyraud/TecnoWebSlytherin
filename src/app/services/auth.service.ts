@@ -4,14 +4,13 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 const TOKEN_KEY = 'auth_token';
-const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsIn...'; // Token genérico
+const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsIn...'; //token
 
-// 👇 CAMBIO 1: Creamos una LISTA de usuarios válidos
 const USUARIOS_VALIDOS = [
   { email: 'guillermo.pino@cine.com', pass: '123guillermo', nombre: 'Guillermo Pino' },
   { email: 'tomas.carvajal@cine.com',  pass: '123tomas', nombre: 'Tomas Carvajal' },
   { email: 'sebastain.eyraud@cine.com', pass: '123sebastian', nombre: 'Sebastian Eyraud' },
-  { email: 'mayling.alvarez@demo.com',  pass: '123mayling', nombre: 'Mayling Alvarez' },
+  { email: 'mayling.alvarez@cine.com',  pass: '123mayling', nombre: 'Mayling Alvarez' },
   { email: 'hilda.albarracin@cine.com', pass: '123hilda', nombre: 'Hilda Albarracin' }
 ];
 

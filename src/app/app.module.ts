@@ -11,12 +11,12 @@ import { FooterComponent } from './shared/footer/footer.component';
 
 import { PrincipalComponent } from './pages/principal/principal.component';
 import { LoginComponent } from './pages/login/login.component';
+import { RegistroComponent } from './pages/registro/registro.component';
 import { AdminComponent } from './pages/admin/admin.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
-import { UsuarioComponent } from './usuario/usuario.component';
 import { MembresiaComponent } from './membresia/membresia.component';
 
 @NgModule({
@@ -27,10 +27,10 @@ import { MembresiaComponent } from './membresia/membresia.component';
     FooterComponent,
     PrincipalComponent,
     LoginComponent,
+    RegistroComponent,
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
-    UsuarioComponent,
     MembresiaComponent
   ],
   imports: [
