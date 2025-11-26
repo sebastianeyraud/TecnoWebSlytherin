@@ -28,6 +28,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
+  position: relative; 
+  /* Asegura que el header esté en una capa superior (un valor grande) */
+  z-index: 1000;
 }
 
 .topbar-right {

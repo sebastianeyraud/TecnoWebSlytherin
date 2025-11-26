@@ -1,22 +1,46 @@
 <header class="topbar">
   <div class="topbar-left">
     <div class="logo">
-  <img src="/assets/logoamc.png" alt="AMC Theatres" />
-  </div>
-
+      <img src="/assets/logoamc.png" alt="AMC Theatres" />
+    </div>
     <nav class="main-nav">
       <a href="#">Ve una película</a>
       <a href="#">Promociones</a>
     </nav>
   </div>
-
   <div class="topbar-right">
+    <button class="header-btn">🛒</button> 
 
-  <button class="header-btn">🛒</button>
+    <div style="color: white; margin-right: 15px;">
+      Estado de Sesión: {{ isLoggedIn$ | async }}
+    </div>
 
-  <button class="header-btn" routerLink="/login">👤 Iniciar sesión</button>
+    
 
-  <button class="header-btn" routerLink="/registro">Crear cuenta</button>
+    <ng-container *ngIf="isLoggedIn$ | async as loggedIn; else notLoggedIn">
 
+        <ng-container *ngIf="loggedIn">
+            <button class="header-btn" (click)="onLogout()">
+                Cerrar sesión
+            </button>
+            <button class="header-btn" (click)="onLogout()">
+                Perfil
+            </button>
+            <button class="header-btn" routerLink="/membresia">
+                Membresia
+            </button>
+        </ng-container>
+
+    </ng-container>
+
+    <ng-template #notLoggedIn>
+            <button class="header-btn" routerLink="/login">
+                👤 Iniciar sesión
+            </button>
+            <button class="header-btn" routerLink="/registro">
+                Crear cuenta
+            </button>
+        </ng-template>
+    
   </div>
 </header>
