@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 //Componentes
-import { PrincipalComponent } from './pages/principal/principal.component';
+import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroComponent } from './pages/registro/registro.component';
 import { AdminComponent } from './pages/admin/admin.component';
@@ -22,7 +22,7 @@ const routes: Routes = [
   
   // 2. RUTA PRINCIPAL: Reubicamos el PrincipalComponent bajo un path específico.
   //    (Si lo dejas como estaba, el PrincipalComponent nunca se mostrará).
-  { path: 'principal', component: PrincipalComponent },
+  { path: 'home', component: HomeComponent },
   
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
@@ -33,7 +33,7 @@ const routes: Routes = [
   { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] },
   
   // 3. RUTA WILDCARD: Captura cualquier otra ruta no definida y redirige.
-  { path: '**', redirectTo: '/membresias', pathMatch: 'full' }
+  { path: '**', redirectTo: '/home', pathMatch: 'full' }
 ];
 
 @NgModule({
