@@ -46,7 +46,8 @@ export class AuthService {
           // NOTIFICAR: Si el login es exitoso, cambia el estado a TRUE
           this.loggedIn.next(true); 
           
-          this.router.navigate(['/membresia']);
+          //Cuando inicia sesión, redirige a home
+          this.router.navigate(['/home']);
         })
       );
     } else {

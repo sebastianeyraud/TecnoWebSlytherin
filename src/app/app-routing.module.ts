@@ -18,7 +18,7 @@ import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
   // 1. RUTA POR DEFECTO: Ahora, la primera ruta es la redirección.
-  { path: '', redirectTo: '/registro', pathMatch: 'full' }, 
+  { path: '', redirectTo: '/home', pathMatch: 'full' }, 
   
   // 2. RUTA PRINCIPAL: Reubicamos el PrincipalComponent bajo un path específico.
   //    (Si lo dejas como estaba, el PrincipalComponent nunca se mostrará).

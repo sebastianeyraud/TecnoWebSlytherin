@@ -1,0 +1,165 @@
+/* ======= GENERAL RESET ======= */
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #000;
+  color: #fff;
+}
+
+/* ======= HERO SECTION ======= */
+.hero {
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.26)), /* Gris oscuro con 70% de opacidad */
+        url('/assets/wickedhome.jpg'); /* La imagen de fondo */
+    background-size: cover;
+    background-position: top;
+    padding: 5rem 2rem;
+    color: #fff;
+    text-align: left; /* cambia la alineación */
+}
+
+.hero-content {
+  max-width: 600px; /* limita el ancho para que no se extienda demasiado */
+}
+
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.hero .subtitle {
+    font-size: 1.2rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.hero .description {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.hero .release-date {
+    font-size: 1.1rem;
+    color: #fff1aa;
+    font-weight: bold;
+}
+
+/* ======= CARTELERA ======= */
+.cartelera {
+  padding: 3rem 2rem;
+  background-color: #3c0621; ;
+}
+
+
+.cartelera h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ffffff;
+}
+
+.cartelera .posters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.cartelera .posters img {
+    width: 150px;
+    height: auto;
+    border: 2px solid #00ff99;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.cartelera .posters img:hover {
+    transform: scale(1.05);
+}
+
+/* ======= PROMOCIONES ======= */
+.promociones {
+    padding: 3rem 2rem;
+    background-color: #222;
+}
+
+.promociones h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #ff66cc;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.promo-item {
+    background-color: #333;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 5px solid #ff66cc;
+    color: #fff;
+}
+
+.promo-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: #ff99cc;
+}
+
+/* ======= MEMBRESÍA ======= */
+.membresia {
+    padding: 3rem 2rem;
+    background-color: #113311;
+}
+
+.membresia h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #66ff66;
+}
+
+.membresia-content {
+    background-color: #224422;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 5px solid #66ff66;
+}
+
+.membresia-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #99ff99;
+}
+
+/* ======= BONUS POINTS ======= */
+.bonus {
+    padding: 2rem;
+    background-color: #333;
+    text-align: center;
+    color: #ffd700;
+}
+
+.bonus h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.bonus p {
+    font-size: 1rem;
+}
+
