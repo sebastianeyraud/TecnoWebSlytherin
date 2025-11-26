@@ -12,7 +12,7 @@
     background-attachment: fixed;
     
     /* Propiedades de Diseño (se mantienen igual) */
-    min-height: 100vh;
+    min-height: 86vh;
     display: flex;
     justify-content: center; 
     align-items: center; 
