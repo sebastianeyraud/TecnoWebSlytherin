@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroComponent } from './pages/registro/registro.component';
+import { PerfilComponent} from './pages/perfil/perfil.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
@@ -26,6 +27,7 @@ const routes: Routes = [
   
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
+  { path: 'perfil', component: PerfilComponent },
   { path: 'admin', component: AdminComponent, canActivate: [ProteccionGuard, ProteccionAdminGuard] },
   { path: 'cartelera', component: CarteleraComponent },
   { path: 'pelicula/wicked', component: DetallePeliculaComponent },

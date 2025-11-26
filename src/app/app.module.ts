@@ -18,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { MembresiaComponent } from './membresia/membresia.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { MembresiaComponent } from './membresia/membresia.component';
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
-    MembresiaComponent
+    MembresiaComponent,
+    PerfilComponent
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,14 @@
-.footer {
-  background: #134F5C;
-  color: #fff;
-  font-size: 11px;
-  padding: 8px 24px;
-  text-align: center;
+/* El header y el footer no necesitan reglas especiales de crecimiento */
+footer {
+    flex-shrink: 0; /* Asegura que no se encojan */
+    width: 100%;
+}
+
+/* Estilo visual para el footer, como en tu imagen */
+footer {
+    background-color: #1A4747; /* El color verde oscuro de tu imagen */
+    color: white;
+    padding: 15px 50px;
+    text-align: center;
+    font-size: 0.8em;
 }

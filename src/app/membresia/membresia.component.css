@@ -1,11 +1,12 @@
 /* 1. Estilos del Contenedor Principal (Fondo Oscuro) */
 .memberships-container {
     background-color: #1c4447; /* El color verde azulado oscuro */
-    min-height: 100vh;
-    padding: 80px 20px;
+    min-height: 86vh;
+    padding: 50px 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
 }
 
 /* 2. Estilos para la Disposición de las Tarjetas (Grid o Flex) */
