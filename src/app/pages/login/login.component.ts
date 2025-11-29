@@ -31,6 +31,7 @@ export class LoginComponent {
     }
 
     const usuario = this.formularioLogin.value as User;
+    console.log(usuario)
     this.authService.login(usuario).then(ok => {
       if (ok) {
         this.router.navigateByUrl('');

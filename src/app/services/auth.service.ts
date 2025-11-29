@@ -12,6 +12,7 @@ export class AuthService {
 
   // Credenciales fakes para admin
   private credenciales = new Map<string, string[]>([
+    ['user', ['user', 'usuario']],
     ['admin', ['admin', 'admin']]
   ]);
 

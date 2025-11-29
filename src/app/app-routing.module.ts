@@ -29,6 +29,10 @@ const routes: Routes = [
     component: CarteleraComponent
   },
   {
+    path: 'pelicula/:titulo',
+    component: DetallePeliculaComponent
+  },
+  {
     path: 'pelicula/wicked',
     component: DetallePeliculaComponent
   },

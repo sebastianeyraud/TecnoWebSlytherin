@@ -24,11 +24,17 @@ export class CarteleraComponent implements OnInit {
     this.dataService.getPeliculas().subscribe((data: any[]) => {
       this.peliculas = data.map(d => Pelicula.fromJSON(d));
       this.peliculasFiltradas = [...this.peliculas];
+
+      console.log("PELÍCULAS CARGADAS:", this.peliculas);
     });
   }
 
   aplicarFiltros() {
     this.peliculasFiltradas = this.peliculas.filter(p => {
+      if (this.filtro.titulo && !p.getTitulo().toLowerCase().includes(this.filtro.titulo.toLowerCase())) {
+        return false;
+      }
+
       if (this.filtro.tiempo && !p.getDuracionMin().toString().includes(this.filtro.tiempo)) {
         return false;
       }
