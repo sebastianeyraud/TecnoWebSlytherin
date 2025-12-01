@@ -1,4 +1,5 @@
 import { Funcion } from "./funcion.model";
+import { Actor } from "./actor";
 
 export class Pelicula {
   private titulo: string;
@@ -9,7 +10,10 @@ export class Pelicula {
   private clasificacion: string;
   private poster_url: string;
   private created_at: Date;
-  private casting: string[];
+  private casting: Actor[];
+  private estreno: Date;
+  private banner: string;
+  private trailer : string;
 
   constructor(
     titulo: string,
@@ -19,7 +23,10 @@ export class Pelicula {
     genero: string,
     clasificacion: string,
     poster_url: string,
-    casting: string[] = []
+    casting: Actor[] = [],
+    estreno: Date,
+    banner: string,
+    trailer : string
   ) {
     this.titulo = titulo;
     this.funciones = funciones ?? []; // <- ahora sí usa el parámetro
@@ -30,6 +37,9 @@ export class Pelicula {
     this.poster_url = poster_url;
     this.casting = casting;
     this.created_at = new Date();
+    this.estreno = estreno;
+    this.banner = banner
+    this.trailer = trailer
   }
 
   getTitulo = () => this.titulo;
@@ -41,6 +51,9 @@ export class Pelicula {
   getPosterUrl = () => this.poster_url;
   getCreatedAt = () => this.created_at;
   getCasting = () => this.casting;
+  getEstreno = () => this.estreno;
+  getBanner = () => this.banner;
+  getTrailer = () => this.trailer;
 
   setTitulo = (v: string) => this.titulo = v;
   setSinopsis = (v: string) => this.sinopsis = v;
@@ -48,9 +61,12 @@ export class Pelicula {
   setGenero = (v: string) => this.genero = v;
   setClasificacion = (v: string) => this.clasificacion = v;
   setPosterUrl = (v: string) => this.poster_url = v;
-  setCasting = (v: string[]) => this.casting = v;
+  setCasting = (v: Actor[]) => this.casting = v;
+  setEstreno = (v: Date) => this.estreno = v;
+  setBanner = (v: string) => this.banner = v;
+  setTrailer = (v:string) => this.trailer = v;
 
-  addActor = (actor: string) => this.casting.push(actor);
+  addActor = (actor: Actor) => this.casting.push(actor);
   addFuncion = (f: Funcion) => this.funciones.push(f);
 
   toJSON() {
@@ -63,7 +79,9 @@ export class Pelicula {
       clasificacion: this.clasificacion,
       poster_url: this.poster_url,
       created_at: this.created_at.toISOString(),
-      casting: this.casting
+      casting: this.casting,
+      estreno: this.estreno,
+      banner: this.banner
     };
   }
 
@@ -79,7 +97,10 @@ export class Pelicula {
       obj.genero,
       obj.clasificacion,
       obj.poster_url,
-      casting
+      casting,
+      obj.estreno,
+      obj.banner,
+      obj.trailer
     );
 
     p.created_at = obj.created_at ? new Date(obj.created_at) : new Date();
@@ -87,3 +108,4 @@ export class Pelicula {
     return p;
   }
 }
+
