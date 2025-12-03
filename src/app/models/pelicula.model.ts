@@ -1,5 +1,7 @@
 import { Funcion } from "./funcion.model";
 import { Actor } from "./actor";
+import { SalaRegistry } from "./sala-registry";
+import { FuncionJSON } from './funcion-json';
 
 export class Pelicula {
   private titulo: string;
@@ -81,14 +83,44 @@ export class Pelicula {
       created_at: this.created_at.toISOString(),
       casting: this.casting,
       estreno: this.estreno,
-      banner: this.banner
+      banner: this.banner,
+      trailer: this.trailer
     };
   }
 
   static fromJSON(obj: any): Pelicula {
-    const funciones = obj.funciones ?? [];
-    const casting = obj.casting ?? [];
 
+    // --- Casting ---
+    const casting: Actor[] = (obj.casting ?? []).map((a: any) => ({
+      nombre: a.nombre,
+      foto: a.foto
+    }));
+
+    // --- Funciones ---
+    const funcionesJSON: FuncionJSON[] = obj.funciones ?? [];
+
+    const funciones: Funcion[] = funcionesJSON
+      .map((f) => {
+        const sala = SalaRegistry.getByName(f.sala.nombre);
+
+        if (!sala) {
+          console.warn("⚠️ Sala no encontrada:", f.sala.nombre);
+          return null;
+        }
+
+        return new Funcion(
+          sala,
+          new Date(f.start_time),
+          new Date(f.end_time),
+          f.formato,
+          f.precio_base,
+          f.disponible
+        );
+      })
+      .filter((f): f is Funcion => f !== null);
+
+
+    // --- Crear pelicula ---
     const p = new Pelicula(
       obj.titulo,
       funciones,
@@ -98,7 +130,7 @@ export class Pelicula {
       obj.clasificacion,
       obj.poster_url,
       casting,
-      obj.estreno,
+      new Date(obj.estreno),
       obj.banner,
       obj.trailer
     );

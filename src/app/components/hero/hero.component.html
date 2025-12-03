@@ -1,0 +1,35 @@
+<section class="hero" *ngIf="peliculasHero.length > 0">
+  <div
+    class="hero-overlay"
+    [style.background-image]="
+      'url(' + (peliculasHero[currentIndex].getBanner() || peliculasHero[currentIndex].getPosterUrl()) + ')'
+    "
+  >
+
+    <div class="hero-content">
+      <h1>{{ peliculasHero[currentIndex].getTitulo() }}</h1>
+
+      <p class="hero-subtitle">
+        {{ peliculasHero[currentIndex].getGenero() }} ·
+        {{ peliculasHero[currentIndex].getDuracionMin() }} minutos
+      </p>
+
+      <p class="hero-text">
+        {{ peliculasHero[currentIndex].getSinopsis() }}
+      </p>
+
+      <div class="hero-cta">
+        <button class="btn-primary">Comprar tickets</button>
+        <p class="hero-date">
+          {{ peliculasHero[currentIndex].getEstreno() | date:'dd MMM yyyy' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="hero-arrows">
+      <button class="hero-arrow hero-arrow-prev" (click)="prev()">&lt;</button>
+      <button class="hero-arrow hero-arrow-next" (click)="next()">&gt;</button>
+    </div>
+
+  </div>
+</section>

@@ -16,6 +16,7 @@ import { AdminComponent } from './pages/admin/admin.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'; 
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
+import { HeroComponent } from './components/hero/hero.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { AsientosComponent } from './pages/asientos/asientos.component';
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
+    HeroComponent
   ],
   imports: [
     BrowserModule,

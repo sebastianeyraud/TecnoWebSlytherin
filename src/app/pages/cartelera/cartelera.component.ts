@@ -49,7 +49,7 @@ export class CarteleraComponent implements OnInit {
 
       if (this.filtro.casting) {
         const encontrado = p.getCasting().some(a =>
-          a.toLowerCase().includes(this.filtro.casting!.toLowerCase())
+          a.nombre.toLowerCase().includes(this.filtro.casting!.toLowerCase())
         );
         if (!encontrado) return false;
       }

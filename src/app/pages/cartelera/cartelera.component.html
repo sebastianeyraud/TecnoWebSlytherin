@@ -1,30 +1,6 @@
 <div class="cartelera-page">
 
-  <section class="hero">
-    <div class="hero-overlay">
-
-      <div class="hero-content">
-        <h1>Wicked</h1>
-        <p class="hero-subtitle">Musical, Fantasia, Drama · 162 minutos</p>
-        <p class="hero-text">
-          Un poquito de texto para complementar, seria como la descripción que puso el admin noma
-          Pensaba en que aqui se mostraran los anuncios de las nuevas cosas, y que tengan un limite
-          Tipo las 5 últimas nuevas cosas ya sean promoción o estrenos.
-        </p>
-
-        <div class="hero-cta">
-          <button class="btn-primary">Comprar tickets</button>
-          <p class="hero-date">13 de Noviembre de 2025</p>
-        </div>
-      </div>
-
-      <div class="hero-arrows">
-        <button class="hero-arrow hero-arrow-prev">&lt;</button>
-        <button class="hero-arrow hero-arrow-next">&gt;</button>
-      </div>
-
-    </div>
-  </section>
+  <app-hero></app-hero>
 
   <main class="layout">
 
@@ -143,8 +119,8 @@
       <div class="movie-description">
         <p>{{ peli.getSinopsis() }}</p>
 
-        <button class="btn-secondary">
-          Añadir al carrito
+        <button class="btn-secondary" [routerLink]="['/pelicula', peli.getTitulo()]">
+          Ver
         </button>
       </div>
 
