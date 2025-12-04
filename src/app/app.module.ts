@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,7 +16,7 @@ import { PerfilComponent} from './pages/perfil/perfil.component';
 
 import { AdminComponent } from './pages/admin/admin.component';
 
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms'; 
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { MembresiaComponent } from './membresia/membresia.component';
@@ -32,12 +33,12 @@ import { MembresiaComponent } from './membresia/membresia.component';
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
-    MembresiaComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    HttpClientModule,
     FormsModule
   ],
   providers: [],

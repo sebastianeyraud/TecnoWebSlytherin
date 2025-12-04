@@ -17,9 +17,9 @@
 
     
 
-    <ng-container *ngIf="isLoggedIn$ | async as loggedIn; else notLoggedIn">
+  <button class="header-btn">Membresía</button>
 
-        <ng-container *ngIf="loggedIn">
+        <ng-container *ngIf="isLoggedIn$ | async; else notLoggedIn">
             <button class="header-btn" (click)="onLogout()">
                 Cerrar sesión
             </button>
@@ -30,8 +30,6 @@
                 Membresia
             </button>
         </ng-container>
-
-    </ng-container>
 
     <ng-template #notLoggedIn>
             <button class="header-btn" routerLink="/login">

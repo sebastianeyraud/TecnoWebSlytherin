@@ -1,0 +1,40 @@
+[
+  {
+    "cine": {
+      "nombre": "Cinepolis Centro",
+      "direccion": "Av. Principal 123",
+      "ciudad": "Ciudad Ejemplo",
+      "telefono": "555-1111"
+    },
+    "nombre": "Sala 1",
+    "tipo": "VIP",
+    "capacidad": 6,
+    "plano_url": "https://example.com/sala1.jpg",
+    "asientos": [
+      { "fila": "A", "numero": 1, "tipo_asiento": "VIP", "disponible": true, "activo": true },
+      { "fila": "A", "numero": 2, "tipo_asiento": "VIP", "disponible": true, "activo": true },
+      { "fila": "B", "numero": 1, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true },
+      { "fila": "B", "numero": 2, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true },
+      { "fila": "C", "numero": 1, "tipo_asiento": "RECLINABLE", "disponible": true, "activo": true },
+      { "fila": "C", "numero": 2, "tipo_asiento": "RECLINABLE", "disponible": true, "activo": true }
+    ]
+  },
+  {
+    "cine": {
+      "nombre": "Cinepolis Norte",
+      "direccion": "Av. Secundaria 456",
+      "ciudad": "Ciudad Ejemplo",
+      "telefono": "555-2222"
+    },
+    "nombre": "Sala 2",
+    "tipo": "ESTANDAR",
+    "capacidad": 4,
+    "plano_url": "https://example.com/sala2.jpg",
+    "asientos": [
+      { "fila": "A", "numero": 1, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true },
+      { "fila": "A", "numero": 2, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true },
+      { "fila": "B", "numero": 1, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true },
+      { "fila": "B", "numero": 2, "tipo_asiento": "ESTANDAR", "disponible": true, "activo": true }
+    ]
+  }
+]

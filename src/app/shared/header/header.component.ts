@@ -1,30 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-// Importa el servicio modificado
-import { AuthService } from '../../services/auth.service'; 
+import { Component } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service'; // ajusta la ruta si es necesario
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+  styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
-  // 1. Propiedad que contendrá el Observable
-  isLoggedIn$!: Observable<boolean>; 
+export class HeaderComponent {
+  isLoggedIn$!: Observable<boolean>;
 
-  constructor(
-    private authService: AuthService, 
-    private router: Router
-  ) { }
+  constructor(private authService: AuthService) {}
 
-  ngOnInit() {
-    // 2. Obtiene la referencia del Observable
-    this.isLoggedIn$ = this.authService.isLoggedIn$;
+  ngOnInit(): void {
+    this.isLoggedIn$ = this.authService.isLoggedIn$; // observable desde el servicio
   }
 
   onLogout(): void {
-    // Llama al método del servicio que también notifica el cambio de estado.
     this.authService.logout();
   }
 }

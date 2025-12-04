@@ -1,43 +1,79 @@
 import { Component, OnInit } from '@angular/core';
-// Asegúrate de que la ruta al servicio sea correcta
-import { AuthService } from '../../services/auth.service'; 
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { User } from 'src/app/models/user'; // importa la interfaz correcta
 
 @Component({
-  selector: 'app-login',                    // Antes: app-usuario
-  templateUrl: './login.component.html',    // Antes: ./usuario.component.html
-  styleUrls: ['./login.component.css']      // Antes: ./usuario.component.css
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit { // Antes: UsuarioComponent
+export class LoginComponent implements OnInit {
 
-  // Objeto para vincular a los inputs del formulario
-  loginData = {
-    email: '',
-    password: ''
-  };
+  formularioLogin!: FormGroup;
   loginError = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // Si ya tiene sesión activa, redirigir inmediatamente (opcional)
-    if (this.authService.isLoggedIn()) {
-      // La redirección se puede manejar con un Guard o aquí
-    }
+    this.formularioLogin = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
   }
 
   /**
-   * Envía las credenciales al AuthService.
+   * Método principal para iniciar sesión usando el formulario reactivo.
+   */
+  iniciarSesion(): void {
+    if (this.formularioLogin.invalid) {
+      console.log('Formulario inválido');
+      this.formularioLogin.markAllAsTouched();
+      return;
+    }
+
+    // Construimos el objeto User completo
+    const usuario: User = {
+      email: this.formularioLogin.get('email')?.value,
+      password: this.formularioLogin.get('password')?.value,
+      nombre: '', // valor por defecto o real si lo tienes
+      rol: 'usuario' // asigna el rol según tu lógica
+    };
+
+    console.log(usuario);
+
+    this.authService.login(usuario).then((ok: boolean) => {
+      if (ok) {
+        this.router.navigateByUrl('/dashboard'); // Ajusta la ruta según tu app
+      } else {
+        alert('Credenciales incorrectas');
+      }
+    });
+  }
+
+  /**
+   * Alternativa si decides usar loginData en lugar del formulario reactivo.
+   * Este método no es necesario si usas iniciarSesion().
    */
   onSubmit(): void {
     this.loginError = false;
-    
-    // Llamar al servicio de autenticación pasando email y password por separado
-    this.authService.login(this.loginData.email, this.loginData.password)
-      .subscribe(success => {
-        if (!success) {
-          this.loginError = true;
-          // El servicio se encarga de la navegación si es exitoso
-        }
-      });
+
+    const usuario: User = {
+      email: this.formularioLogin.get('email')?.value,
+      password: this.formularioLogin.get('password')?.value,
+      nombre: '', // valor por defecto
+      rol: 'usuario'
+    };
+
+    this.authService.login(usuario).then((success: boolean) => {
+      if (!success) {
+        this.loginError = true;
+      }
+    });
   }
 }

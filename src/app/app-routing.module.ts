@@ -18,24 +18,29 @@ import { ProteccionGuard } from './guards/proteccion.guard';
 import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
+
   // 1. RUTA POR DEFECTO: Ahora, la primera ruta es la redirección.
-  { path: '', redirectTo: '/home', pathMatch: 'full' }, 
-  
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+
   // 2. RUTA PRINCIPAL: Reubicamos el PrincipalComponent bajo un path específico.
   //    (Si lo dejas como estaba, el PrincipalComponent nunca se mostrará).
   { path: 'home', component: HomeComponent },
-  
+
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'admin', component: AdminComponent, canActivate: [ProteccionGuard, ProteccionAdminGuard] },
   { path: 'cartelera', component: CarteleraComponent },
+  //Pelicula /:titulo ???????????????????
+  { path: 'pelicula/:titulo', component: DetallePeliculaComponent },
+  //?????????????????????????????????????
   { path: 'pelicula/wicked', component: DetallePeliculaComponent },
   { path: 'asientos', component: AsientosComponent },
   { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] },
-  
+
   // 3. RUTA WILDCARD: Captura cualquier otra ruta no definida y redirige.
   { path: '**', redirectTo: '/home', pathMatch: 'full' }
+  
 ];
 
 @NgModule({
