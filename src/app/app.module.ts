@@ -9,16 +9,16 @@ import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
 
-import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroComponent } from './pages/registro/registro.component';
+import { PerfilComponent} from './pages/perfil/perfil.component';
+
 import { AdminComponent } from './pages/admin/admin.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { MembresiaComponent } from './membresia/membresia.component';
-import { PerfilComponent } from './pages/perfil/perfil.component';
 
 @NgModule({
   declarations: [
@@ -26,14 +26,13 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
     CarteleraComponent,
     HeaderComponent,
     FooterComponent,
-    HomeComponent,
     LoginComponent,
     RegistroComponent,
+    PerfilComponent,
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
-    MembresiaComponent,
-    PerfilComponent
+    MembresiaComponent
   ],
   imports: [
     BrowserModule,
