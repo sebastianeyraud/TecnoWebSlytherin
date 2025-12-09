@@ -2,26 +2,26 @@
   <div
     class="hero-overlay"
     [style.background-image]="
-      'url(' + (peliculasHero[currentIndex].getBanner() || peliculasHero[currentIndex].getPosterUrl()) + ')'
+      'url(' + (peliculasHero[currentIndex].banner || peliculasHero[currentIndex].poster_url) + ')'
     "
   >
 
     <div class="hero-content">
-      <h1>{{ peliculasHero[currentIndex].getTitulo() }}</h1>
+      <h1>{{ peliculasHero[currentIndex].titulo }}</h1>
 
       <p class="hero-subtitle">
-        {{ peliculasHero[currentIndex].getGenero() }} ·
-        {{ peliculasHero[currentIndex].getDuracionMin() }} minutos
+        {{ peliculasHero[currentIndex].genero }} ·
+        {{ peliculasHero[currentIndex].duracion_min }} minutos
       </p>
 
       <p class="hero-text">
-        {{ peliculasHero[currentIndex].getSinopsis() }}
+        {{ peliculasHero[currentIndex].sinopsis }}
       </p>
 
       <div class="hero-cta">
         <button class="btn-primary">Comprar tickets</button>
         <p class="hero-date">
-          {{ peliculasHero[currentIndex].getEstreno() | date:'dd MMM yyyy' }}
+          {{ peliculasHero[currentIndex].estreno | date:'dd MMM yyyy' }}
         </p>
       </div>
     </div>

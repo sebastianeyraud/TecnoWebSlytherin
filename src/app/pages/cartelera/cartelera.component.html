@@ -1,6 +1,9 @@
 <div class="cartelera-page">
 
   <app-hero></app-hero>
+  <div *ngIf="auth.isAdmin()">
+    <h1>Admin view</h1>
+  </div>
 
   <main class="layout">
 
@@ -89,44 +92,60 @@
         </div>
       </div>
 
+      <!-- Botón para agregar -->
+      <button *ngIf="auth.isAdmin()" (click)="showForm = true">Agregar Película</button>
+
+      
+      <app-formulario-pelicula
+        [visible]="showForm"
+        (save)="onSavePelicula($event)"
+        (close)="showForm = false">
+      </app-formulario-pelicula>
+
+
       <div class="filter-divider"></div>
 
     </aside>
 
     <section class="movie-detail">
 
-    <div class="movie-card" *ngFor="let peli of peliculasFiltradas">
 
-      <div class="movie-poster">
-        <img [src]="peli.getPosterUrl()" [alt]="peli.getTitulo()" />
+      <div class="movie-card" *ngFor="let peli of peliculasFiltradas">
+
+
+        <div class="movie-poster">
+          <img [src]="peli.poster_url" [alt]="peli.titulo" />
+        </div>
+
+        <div class="movie-info">
+          <h2>{{ peli.titulo }}</h2>
+
+          <p class="movie-meta">
+            {{ peli.genero }}<br />
+            {{ peli.duracion_min }} minutos<br />
+            {{ peli.clasificacion }}
+          </p>
+
+          <p class="movie-premiere">
+            Estreno<br />
+            <span>{{ peli.created_at | date }}</span>
+          </p>
+        </div>
+
+        <div class="movie-description">
+          <p>{{ peli.sinopsis }}</p>
+
+          <button class="btn-secondary" [routerLink]="['/pelicula', peli.titulo]">
+            Ver
+          </button>
+          <div *ngIf="auth.isAdmin()" class="admin-buttons">
+            <button (click)="eliminarPelicula(peli)">Eliminar película</button>
+          </div>
+        </div>
+
       </div>
 
-      <div class="movie-info">
-        <h2>{{ peli.getTitulo() }}</h2>
-
-        <p class="movie-meta">
-          {{ peli.getGenero() }}<br />
-          {{ peli.getDuracionMin() }} minutos<br />
-          {{ peli.getClasificacion() }}
-        </p>
-
-        <p class="movie-premiere">
-          Estreno<br />
-          <span>{{ peli.getCreatedAt() | date }}</span>
-        </p>
-      </div>
-
-      <div class="movie-description">
-        <p>{{ peli.getSinopsis() }}</p>
-
-        <button class="btn-secondary" [routerLink]="['/pelicula', peli.getTitulo()]">
-          Ver
-        </button>
-      </div>
-
-    </div>
-
-  </section>
+    </section>
   </main>
 
 </div>

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/services/data.service';
-import { Pelicula } from 'src/app/models/pelicula.model';
-
+import { PeliculaService } from 'src/app/services/pelicula.service';
+import { PeliculaI } from 'src/app/models/interfaces/pelicula-i';
 @Component({
   selector: 'app-hero',
   templateUrl: './hero.component.html',
@@ -9,28 +8,27 @@ import { Pelicula } from 'src/app/models/pelicula.model';
 })
 export class HeroComponent implements OnInit {
 
-  peliculasHero: Pelicula[] = [];
+  peliculasHero: PeliculaI[] = [];
   currentIndex = 0;
 
-  constructor(private dataService: DataService) {}
+  constructor(private peliculaService: PeliculaService) {}
 
-  ngOnInit() {
-    this.cargarPeliculasHero();
+  async ngOnInit() {
+    await this.cargarPeliculasHero();
   }
 
-  cargarPeliculasHero() {
-    this.dataService.getPeliculas().subscribe(data => {
-
-      const peliculas = data.map(d => Pelicula.fromJSON(d));
+  async cargarPeliculasHero() {
+    try {
+      const data = await this.peliculaService.getAll();
 
       // ordenar por fecha DESC
-      peliculas.sort((a, b) =>
-        new Date(b.getCreatedAt()).getTime() - new Date(a.getCreatedAt()).getTime()
-      );
+      data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       // tomar solo 5
-      this.peliculasHero = peliculas.slice(0, 5);
-    });
+      this.peliculasHero = data.slice(0, 5);
+    } catch (error) {
+      console.error('Error cargando películas hero:', error);
+    }
   }
 
   next() {
@@ -38,8 +36,6 @@ export class HeroComponent implements OnInit {
   }
 
   prev() {
-    this.currentIndex =
-      (this.currentIndex - 1 + this.peliculasHero.length) %
-      this.peliculasHero.length;
+    this.currentIndex = (this.currentIndex - 1 + this.peliculasHero.length) % this.peliculasHero.length;
   }
 }

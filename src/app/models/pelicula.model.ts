@@ -1,37 +1,33 @@
-import { Funcion } from "./funcion.model";
-import { Actor } from "./actor";
-import { SalaRegistry } from "./sala-registry";
-import { FuncionJSON } from './funcion-json';
 
 export class Pelicula {
   private titulo: string;
-  private funciones: Funcion[];
+  private funciones: number[];
   private sinopsis: string;
   private duracion_min: number;
   private genero: string;
   private clasificacion: string;
   private poster_url: string;
   private created_at: Date;
-  private casting: Actor[];
+  private casting: number[];
   private estreno: Date;
   private banner: string;
   private trailer : string;
 
   constructor(
     titulo: string,
-    funciones: Funcion[],
+    funciones: number[] = [],
     sinopsis: string,
     duracion_min: number,
     genero: string,
     clasificacion: string,
     poster_url: string,
-    casting: Actor[] = [],
+    casting: number[] = [],
     estreno: Date,
     banner: string,
     trailer : string
   ) {
     this.titulo = titulo;
-    this.funciones = funciones ?? []; // <- ahora sí usa el parámetro
+    this.funciones = funciones;
     this.sinopsis = sinopsis;
     this.duracion_min = duracion_min;
     this.genero = genero;
@@ -63,13 +59,13 @@ export class Pelicula {
   setGenero = (v: string) => this.genero = v;
   setClasificacion = (v: string) => this.clasificacion = v;
   setPosterUrl = (v: string) => this.poster_url = v;
-  setCasting = (v: Actor[]) => this.casting = v;
+  setCasting = (v: number[]) => this.casting = v;
   setEstreno = (v: Date) => this.estreno = v;
   setBanner = (v: string) => this.banner = v;
   setTrailer = (v:string) => this.trailer = v;
 
-  addActor = (actor: Actor) => this.casting.push(actor);
-  addFuncion = (f: Funcion) => this.funciones.push(f);
+  addActor = (actor: number) => this.casting.push(actor);
+  addFuncion = (f: number) => this.funciones.push(f);
 
   toJSON() {
     return {
@@ -89,47 +85,15 @@ export class Pelicula {
   }
 
   static fromJSON(obj: any): Pelicula {
-
-    // --- Casting ---
-    const casting: Actor[] = (obj.casting ?? []).map((a: any) => ({
-      nombre: a.nombre,
-      foto: a.foto
-    }));
-
-    // --- Funciones ---
-    const funcionesJSON: FuncionJSON[] = obj.funciones ?? [];
-
-    const funciones: Funcion[] = funcionesJSON
-      .map((f) => {
-        const sala = SalaRegistry.getByName(f.sala.nombre);
-
-        if (!sala) {
-          console.warn("⚠️ Sala no encontrada:", f.sala.nombre);
-          return null;
-        }
-
-        return new Funcion(
-          sala,
-          new Date(f.start_time),
-          new Date(f.end_time),
-          f.formato,
-          f.precio_base,
-          f.disponible
-        );
-      })
-      .filter((f): f is Funcion => f !== null);
-
-
-    // --- Crear pelicula ---
     const p = new Pelicula(
       obj.titulo,
-      funciones,
+      obj.funciones ?? [],
       obj.sinopsis,
       obj.duracion_min,
       obj.genero,
       obj.clasificacion,
       obj.poster_url,
-      casting,
+      obj.casting ?? [],
       new Date(obj.estreno),
       obj.banner,
       obj.trailer

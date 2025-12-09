@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup} from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from 'src/app/models/user';
+import { User } from 'src/app/models/interfaces/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 
@@ -32,7 +32,7 @@ export class LoginComponent {
 
     const usuario = this.formularioLogin.value as User;
     console.log(usuario)
-    this.authService.login(usuario).then(ok => {
+    this.authService.login(usuario.email, usuario.password).then(ok => {
       if (ok) {
         this.router.navigateByUrl('');
       } else {

@@ -1,104 +1,148 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { AuthService } from 'src/app/services/auth.service';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataService } from 'src/app/services/data.service';
-import { Pelicula } from 'src/app/models/pelicula.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PeliculaService } from 'src/app/services/pelicula.service';
+import { ActorService } from 'src/app/services/actor.service';
+import { FuncionService } from 'src/app/services/funcion.service';
+import { PeliculaI } from 'src/app/models/interfaces/pelicula-i';
+import { Actor } from 'src/app/models/interfaces/actor';
+import { FuncionI } from 'src/app/models/interfaces/funcion-i';
+import { AuthService } from 'src/app/services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-detalle-pelicula',
   templateUrl: './detalle-pelicula.component.html',
-  styleUrls: ['./detalle-pelicula.component.css'],
-
+  styleUrls: ['./detalle-pelicula.component.css']
 })
-export class DetallePeliculaComponent implements AfterViewInit {
+export class DetallePeliculaComponent implements OnInit, AfterViewInit {
 
-  pelicula!: Pelicula;
-  trailerPlaying = false;
+  pelicula!: PeliculaI;
+  actores: Actor[] = [];
+  funciones: FuncionI[] = [];
   trailerUrl!: SafeResourceUrl;
   funcionesAgrupadas: any[] = [];
-
-  constructor(
-    public auth: AuthService,
-    private route: ActivatedRoute,
-    private dataService: DataService,
-    private sanitizer: DomSanitizer) {}
+  diasDisponibles: string[] = [];
+  trailerPlaying = false;
+  cargando = true;
+  showForm: boolean = false;
 
   selectedTab: 'info' | 'horario' = 'info';
-  isFavorite = false;
-  selectTab(tab: 'info' | 'horario') {
-    this.selectedTab = tab;
-  }
-  toggleFavorite() {
-    this.isFavorite = !this.isFavorite;
-  }
+  peliculas: PeliculaI[] = [];
+  private subscription!: Subscription;
+
   @ViewChild('actorTrack') actorTrack!: ElementRef<HTMLDivElement>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private peliculaService: PeliculaService,
+    private actorService: ActorService,
+    private funcionService: FuncionService,
+    private sanitizer: DomSanitizer,
+    public auth: AuthService
+  ) {}
 
   ngOnInit() {
     const titulo = decodeURIComponent(this.route.snapshot.paramMap.get('titulo')!);
 
-    this.dataService.getPeliculas().subscribe(pelis => {
+    // 🔹 Suscribirse al observable para que la UI se actualice automáticamente
+    this.subscription = this.peliculaService.peliculas$.subscribe(pelis => {
+      this.peliculas = pelis;
       const raw = pelis.find(p => p.titulo === titulo);
-      if (raw) {
-        this.pelicula = Pelicula.fromJSON(raw);
-        this.agruparFunciones();
-      } else {
+      if (!raw) {
         console.warn('No se encontró la película:', titulo);
+        this.cargando = false;
+        return;
       }
+      this.pelicula = raw;
+      this.loadActoresYFunciones();
     });
-  }
 
-
-  get actores() {
-    return this.pelicula?.getCasting() ?? [];
+    // 🔹 Inicializar la carga desde IndexedDB
+    this.peliculaService.getAll();
   }
 
   ngAfterViewInit(): void {}
 
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+  }
+
+  private async loadActoresYFunciones() {
+    const [allActores, allFunciones] = await Promise.all([
+      this.actorService.getAll(),
+      this.funcionService.getAll()
+    ]);
+
+    this.actores = (this.pelicula.casting ?? [])
+      .map(id => allActores.find(a => a.id === id))
+      .filter(a => a != null) as Actor[];
+
+    this.funciones = (this.pelicula.funciones ?? [])
+      .map(id => allFunciones.find(f => f.id === id))
+      .filter(f => f != null) as FuncionI[];
+
+    // Generar días únicos
+    const diasSet = new Set<string>();
+    this.funciones.forEach(f => {
+      const dia = new Date(f.start_time).toLocaleDateString('es-ES', { weekday: 'long' });
+      diasSet.add(dia.charAt(0).toUpperCase() + dia.slice(1));
+    });
+    this.diasDisponibles = Array.from(diasSet);
+
+    // Agrupar funciones por sala
+    const salasMap: Record<number, any> = {};
+    this.funciones.forEach(f => {
+      if (!salasMap[f.sala]) {
+        salasMap[f.sala] = { sala: f.sala, funciones: [], formatos: new Set<string>() };
+      }
+      salasMap[f.sala].funciones.push(f);
+      salasMap[f.sala].formatos.add(f.formato);
+    });
+
+    this.funcionesAgrupadas = Object.values(salasMap).map(grupo => ({
+      ...grupo,
+      formatos: Array.from(grupo.formatos)
+    }));
+
+    this.cargando = false;
+  }
+
+  playTrailer() {
+    if (!this.pelicula.trailer) return;
+    this.trailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.pelicula.trailer + '?autoplay=1');
+    this.trailerPlaying = true;
+  }
+
+  selectTab(tab: 'info' | 'horario') {
+    this.selectedTab = tab;
+  }
+
   scrollActors(direction: number) {
     if (!this.actorTrack) return;
-
     const container = this.actorTrack.nativeElement;
     const firstCard = container.firstElementChild as HTMLElement | null;
     const step = firstCard ? firstCard.clientWidth + 12 : 140;
-
     container.scrollBy({
       left: direction * step * 3,
       behavior: 'smooth'
     });
   }
 
-  playTrailer() {
-    const url = this.pelicula.getTrailer() + "?autoplay=1";
-
-    this.trailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    this.trailerPlaying = true;
+  isFavorite = false;
+  toggleFavorite() {
+    this.isFavorite = !this.isFavorite;
   }
 
-  agruparFunciones() {
-  const mapa = new Map<string, any>();
-
-  for (const f of this.pelicula.getFunciones()) {
-
-    const salaNombre = f.getSala().getNombre();
-    const formato = f.getFormato();
-
-    if (!mapa.has(salaNombre)) {
-      mapa.set(salaNombre, {
-        sala: salaNombre,
-        funciones: [],
-        formatos: new Set()
-      });
-    }
-
-    const grupo = mapa.get(salaNombre);
-    grupo.funciones.push(f);
-    grupo.formatos.add(formato);
+  editarPelicula(p: PeliculaI) {
+    // Clonar para no modificar el original hasta guardar
+    this.pelicula = { ...p };
+    this.showForm = true;
   }
 
-  this.funcionesAgrupadas = Array.from(mapa.values())
-    .map(g => ({
-      ...g,
-      formatos: Array.from(g.formatos)
-    }));
-}}
+  async onSavePelicula(pelicula: PeliculaI) {
+    await this.peliculaService.update(pelicula); // 🔹 actualizar y emitir nuevo valor
+    this.showForm = false;
+    // No es necesario llamar a getAll(), el observable ya refresca automáticamente
+  }
+}

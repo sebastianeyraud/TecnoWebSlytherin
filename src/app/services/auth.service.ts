@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/interfaces/user';
 import { Usuario } from '../models/usuario.model';
-import { DataService } from './data.service';
-import { firstValueFrom } from 'rxjs';
+import { IndexedDBService } from './indexed-db.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,76 +9,63 @@ import { firstValueFrom } from 'rxjs';
 export class AuthService {
   private readonly STORAGE_KEY = 'myapp_session';
 
-  // Credenciales fakes para admin
-  private credenciales = new Map<string, string[]>([
-    ['user', ['user', 'usuario']],
-    ['admin', ['admin', 'admin']]
-  ]);
-
-  constructor(private dataService: DataService) {}
+  constructor(private dbService: IndexedDBService) {}
 
   // LOGIN
-  async login(user: User): Promise<boolean> {
-    if (user.rol === 'admin') {
-      // login admin con credenciales fakes
-      const datos = this.credenciales.get(user.email);
-      if (!datos) {
-        console.log('Admin no registrado');
-        return false;
-      }
-      const [passwordStored] = datos;
-      if (user.password !== passwordStored) {
-        console.log('Contraseña incorrecta');
-        return false;
+  async login(email: string, password: string): Promise<boolean> {
+  await this.dbService.dbReady;
+  const store = this.dbService.getStore('users');
+  const req = store.get(email);
+
+  return new Promise((resolve) => {
+    req.onsuccess = (event: any) => {
+      const user = event.target.result;
+      if (!user || user.password !== password) {
+        resolve(false);
+        return;
       }
 
-      // token solo con email y rol
-      const payload = { email: user.email, role: 'admin' };
+      const payload = { email: user.email, role: user.rol }; // 'admin' o 'usuario'
       localStorage.setItem(this.STORAGE_KEY, btoa(JSON.stringify(payload)));
-      return true;
-    } else {
-      // login usuario desde backend
-      try {
-        const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-        const usuarioEncontrado = usuariosRaw.find((u: any) => u.email === user.email);
+      resolve(true);
+    };
 
-        if (!usuarioEncontrado) {
-          console.log('Usuario no registrado');
-          return false;
-        }
+    req.onerror = () => resolve(false);
+  });
+}
 
-        if (usuarioEncontrado.password !== user.password) {
-          console.log('Contraseña incorrecta');
-          return false;
-        }
-
-        // Token simple: solo el correo
-        const token = btoa(JSON.stringify({ email: usuarioEncontrado.email }));
-        localStorage.setItem(this.STORAGE_KEY, token);
-        return true;
-      } catch (e) {
-        console.error('Error login usuario', e);
-        return false;
-      }
-    }
-  }
 
   // REGISTRO
   async registrar(user: Usuario): Promise<void> {
-    // primero verificamos si ya existe en backend
-    const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-    if (usuariosRaw.some((u: any) => u.email === user.getEmail())) {
-      throw new Error('Usuario ya registrado');
-    }
+    await this.dbService.dbReady;
+    const store = this.dbService.getStore('users', 'readwrite');
 
-    // guardar en backend
-    await firstValueFrom(this.dataService.addUsuario(user.toJSON()));
+    // Verificar si ya existe
+    const existing: any = await new Promise((resolve, reject) => {
+      const req = store.get(user.getEmail());
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+
+    if (existing) throw new Error('Usuario ya registrado');
+
+    // Guardar en IndexedDB
+    await new Promise((resolve, reject) => {
+      const req = store.add(user.toJSON());
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
   }
 
-  // Obtener todos los usuarios desde backend
+  // Obtener todos los usuarios
   async getAllUsuarios(): Promise<Usuario[]> {
-    const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-    return usuariosRaw.map((u: any) => Usuario.fromJSON(u));
+    await this.dbService.dbReady;
+    const store = this.dbService.getStore('users');
+    return new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result.map((u: any) => Usuario.fromJSON(u)));
+      request.onerror = () => reject(request.error);
+    });
   }
 
   // LOGOUT
@@ -99,8 +85,7 @@ export class AuthService {
     try {
       const decoded = JSON.parse(atob(token));
       return decoded.role === 'admin';
-    } catch (e) {
-      console.warn('Token inválido', e);
+    } catch {
       return false;
     }
   }

@@ -78,7 +78,7 @@ export class IndexedDBService {
 
     // ---- USUARIO PERFIL ----
     const usuariosPerfil = [
-      { id: 2, apellido: "Pérez", telefono: "555-1234", membresia: "INSIDER", created_at: new Date(), historial: [], notificaciones: [] }
+      { id: 2, apellido: "Pérez", telefono: "555-1234", membresia: "INSIDER", created_at: new Date(), historial: [], notificaciones: [], p_favoritas: [1] }
     ];
     const storePerfil = tx.objectStore('usuarios_perfil');
     usuariosPerfil.forEach(u => storePerfil.add(u));

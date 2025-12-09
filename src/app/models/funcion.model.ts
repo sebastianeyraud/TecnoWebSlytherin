@@ -1,7 +1,6 @@
-import { Sala } from "./sala.model";
 
 export class Funcion {
-  private sala: Sala;
+  private sala: number;
   private start_time: Date;
   private end_time: Date;
   private formato: string;
@@ -11,7 +10,7 @@ export class Funcion {
   private updated_at: Date;
 
   constructor(
-    sala: Sala,
+    sala: number,
     start_time: Date,
     end_time: Date,
     formato: string,
@@ -40,7 +39,7 @@ export class Funcion {
   getUpdatedAt = () => this.updated_at;
 
   // ---------- SETTERS (1 línea) ----------
-  setSala = (v: Sala) => this.sala = v;
+  setSala = (v: number) => this.sala = v;
   setStartTime = (v: Date) => { this.start_time = v; this.touch(); };
   setEndTime = (v: Date) => { this.end_time = v; this.touch(); };
   setFormato = (v: string) => { this.formato = v; this.touch(); };

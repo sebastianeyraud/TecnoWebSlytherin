@@ -1,8 +1,6 @@
-import { Funcion } from "./funcion.model";
-import { Promocion } from "./promocion.model";
 import { TipoAlerta } from "./tipo-alerta";
 
-export class Alerta {
+export class Alerta{
   private titulo: string;
   private mensaje: string;
   private tipo: TipoAlerta;

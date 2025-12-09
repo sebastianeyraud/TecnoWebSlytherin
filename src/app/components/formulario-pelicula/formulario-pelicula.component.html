@@ -1,0 +1,23 @@
+<div *ngIf="visible" class="form-overlay">
+  <div class="form-container">
+    <h2>{{ pelicula ? 'Editar Película' : 'Agregar Película' }}</h2>
+
+    <label>Título:</label>
+    <input type="text" [(ngModel)]="formData.titulo">
+
+    <label>Sinopsis:</label>
+    <textarea [(ngModel)]="formData.sinopsis"></textarea>
+
+    <label>Duración (min):</label>
+    <input type="number" [(ngModel)]="formData.duracion_min">
+
+    <label>Género:</label>
+    <input type="text" [(ngModel)]="formData.genero">
+
+    <label>Clasificación:</label>
+    <input type="text" [(ngModel)]="formData.clasificacion">
+
+    <button (click)="onSubmit()">Guardar</button>
+    <button (click)="onClose()">Cancelar</button>
+  </div>
+</div>
