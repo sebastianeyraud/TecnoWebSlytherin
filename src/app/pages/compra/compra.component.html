@@ -1,0 +1,29 @@
+<h3>Reservas disponibles</h3>
+<div *ngFor="let reserva of reservas">
+  <label>
+    <input
+      type="checkbox"
+      [checked]="reservaSeleccionadaIds.includes(reserva.id)"
+      (change)="onReservaChange(reserva, $event)"
+    />
+    Reserva {{reserva.id}} - Función {{reserva.funcion_id}} - Asientos: {{reserva.asientos_etiquetas.join(', ')}}
+  </label>
+</div>
+
+<h3>Promociones disponibles</h3>
+<div *ngFor="let promo of promociones">
+  <label>
+    <input
+      type="radio"
+      name="promo"
+      [value]="promo.id"
+      [(ngModel)]="promoSeleccionadaId"
+      (change)="onPromoChange(promo.id)"
+    />
+    {{promo.nombre}} ({{promo.codigo}}) - {{promo.descripcion}}
+  </label>
+</div>
+
+<h3>Total a pagar: {{ total$ | async | currency }}</h3>
+
+<button (click)="confirmarCompra()">Confirmar compra</button>
