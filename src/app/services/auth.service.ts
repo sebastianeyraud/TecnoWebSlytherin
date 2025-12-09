@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, BehaviorSubject } from 'rxjs'; 
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/user';
 import { Usuario } from '../models/usuario.model';
-import { DataService } from './data.service';
-import { firstValueFrom } from 'rxjs';
 
-const TOKEN_KEY = 'auth_token';
 const STORAGE_KEY = 'myapp_session';
-const MOCK_TOKEN = 'eyJhbGciOiJIUzI1NiIsIn...'; // token de prueba
 
+// Lista de usuarios hardcodeada
 const USUARIOS_VALIDOS = [
   { email: 'guillermo.pino@cine.com', pass: '123guillermo', nombre: 'Guillermo Pino' },
   { email: 'tomas.carvajal@cine.com', pass: '123tomas', nombre: 'Tomas Carvajal' },
@@ -26,34 +22,17 @@ export class AuthService {
   private loggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.loggedInSubject.asObservable();
 
+  // Credenciales especiales para admin
   private credenciales = new Map<string, string[]>([
     ['admin', ['admin', 'admin']],
     ['user', ['user', 'usuario']]
   ]);
 
-  constructor(private router: Router, private dataService: DataService) {}
+  constructor(private router: Router) {}
 
-  private checkTokenExistence(): boolean {
-    return !!localStorage.getItem(TOKEN_KEY) || !!localStorage.getItem(STORAGE_KEY);
-  }
-
-  loginLegacy(email: string, password: string): Observable<boolean> {
-    const usuarioEncontrado = USUARIOS_VALIDOS.find(u => u.email === email && u.pass === password);
-
-    if (usuarioEncontrado) {
-      return of(true).pipe(
-        tap(() => {
-          localStorage.setItem(TOKEN_KEY, MOCK_TOKEN);
-          console.log(`Bienvenido, ${usuarioEncontrado.nombre}`);
-          this.loggedInSubject.next(true);
-          this.router.navigate(['/home']);
-        })
-      );
-    } else {
-      return of(false);
-    }
-  }
-
+  /**
+   * Login principal: valida contra lista hardcodeada o credenciales admin.
+   */
   async login(user: User): Promise<boolean> {
     if (user.rol === 'admin') {
       const datos = this.credenciales.get(user.email);
@@ -67,41 +46,35 @@ export class AuthService {
       this.loggedInSubject.next(true);
       return true;
     } else {
-      try {
-        const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-        const usuarioEncontrado = usuariosRaw.find((u: any) => u.email === user.email);
-        if (!usuarioEncontrado || usuarioEncontrado.password !== user.password) {
-          console.log('Usuario o contraseña incorrecta');
-          this.loggedInSubject.next(false);
-          return false;
-        }
-        const token = btoa(JSON.stringify({ email: usuarioEncontrado.email }));
-        localStorage.setItem(STORAGE_KEY, token);
-        this.loggedInSubject.next(true);
-        return true;
-      } catch (e) {
-        console.error('Error login usuario', e);
+      // 🔎 Buscar en la lista hardcodeada
+      const usuarioEncontrado = USUARIOS_VALIDOS.find(
+        u => u.email === user.email && u.pass === user.password
+      );
+
+      if (!usuarioEncontrado) {
+        console.log('Usuario o contraseña incorrecta');
         this.loggedInSubject.next(false);
         return false;
       }
+
+      // Generar token simple
+      const token = btoa(JSON.stringify({ email: usuarioEncontrado.email, role: 'usuario' }));
+      localStorage.setItem(STORAGE_KEY, token);
+      this.loggedInSubject.next(true);
+      console.log(`Bienvenido, ${usuarioEncontrado.nombre}`);
+      return true;
     }
   }
 
+  /**
+   * Registro: opcional, aquí podrías agregar usuarios a la lista o backend.
+   * En este caso, como la lista es hardcodeada, no se usa.
+   */
   async registrar(user: Usuario): Promise<void> {
-    const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-    if (usuariosRaw.some((u: any) => u.email === user.getEmail())) {
-      throw new Error('Usuario ya registrado');
-    }
-    await firstValueFrom(this.dataService.addUsuario(user.toJSON()));
-  }
-
-  async getAllUsuarios(): Promise<Usuario[]> {
-    const usuariosRaw = await firstValueFrom(this.dataService.getUsuarios());
-    return usuariosRaw.map((u: any) => Usuario.fromJSON(u));
+    console.warn('Registro no implementado en modo hardcodeado');
   }
 
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(STORAGE_KEY);
     this.loggedInSubject.next(false);
     this.router.navigate(['/login']);
@@ -123,18 +96,13 @@ export class AuthService {
     }
   }
 
-  getCurrentUser(): { email: string } | null {
+  getCurrentUser(): { email: string; role?: string } | null {
     const token = localStorage.getItem(STORAGE_KEY);
     if (!token) return null;
     try {
-      const decoded = JSON.parse(atob(token));
-      return { email: decoded.email };
+      return JSON.parse(atob(token));
     } catch {
       return null;
     }
-  }
-
-  isLoggedIn(): boolean {
-    return this.loggedInSubject.value;
   }
 }

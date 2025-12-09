@@ -11,7 +11,7 @@ export class ProteccionAdminGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this.auth.isLoggedIn()) {
+    if (this.auth.isLogged()) {
       return true;
     }
     this.router.navigate(['/login']);
