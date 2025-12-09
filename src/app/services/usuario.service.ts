@@ -6,7 +6,7 @@ import { UsuarioI } from '../models/interfaces/usuario-i';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private store = 'usuarios';
+  private store = 'usuarios_perfil';
 
   constructor(private db: IndexedDBService) {}
 

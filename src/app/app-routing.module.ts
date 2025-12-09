@@ -9,6 +9,7 @@ import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
+import { CompraComponent } from './pages/compra/compra.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,10 @@ const routes: Routes = [
   },
   { path: 'asientos',
     component: AsientosComponent
+
+  },
+  { path: 'comprar',
+    component: CompraComponent
 
   },
   {

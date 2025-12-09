@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class IndexedDBService {
   private dbName = 'AMC_DB';
-  private dbVersion = 2;
+  private dbVersion = 12;
   private db!: IDBDatabase;
   public dbReady!: Promise<void>;
 
@@ -31,10 +31,17 @@ export class IndexedDBService {
         this.createStore(db, 'admins', 'id');
 
         if (!db.objectStoreNames.contains('users')) {
-          const store = db.createObjectStore('users', { keyPath: 'email' });
+          const store = db.createObjectStore('users', { keyPath: 'id' });
           store.createIndex('rol', 'rol', { unique: false });
-          store.createIndex('id', 'id', { unique: true });
+          store.createIndex('email', 'email', { unique: true });
+        } else {
+          // Si el store existe (versión vieja), obtén el store y crea índices faltantes
+          const store = tx.objectStore('users');
+          if (!store.indexNames.contains('email')) {
+            store.createIndex('email', 'email', { unique: true });
+          }
         }
+
 
         // Seed usando la transacción del onupgradeneeded
         this.seedInitialData(tx);

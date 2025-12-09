@@ -19,14 +19,16 @@ import { UsuarioService } from 'src/app/services/usuario.service';
   styleUrls: ['./compra.component.css']
 })
 /**
- * - sacar de localstorage y mostrar v
- * - seleccionar v
- * - calcular precio (Observable) v
+ * - sacar de localstorage y mostrar v (depende de cómo guarden la reserva y promo seleccionao)
+ * - seleccionar v 
+ * - calcular precio (Observable) v (El promo lo puso como un descuento, hay q cambiar cómo va a ser, sobretodo si aplica a una peli específica)
  * - confirmar compra v
- * - crear boleta/boleto v
+ * - crear boleta/boleto v (No la guardó en compra...)
  * - guardar compra con boleto/boleta en historial de usuario
  * - *compra no hecha, cuidao al cerrar
  */
+
+// Mejor hacer merge antes de seguir
 export class CompraComponent implements OnInit{
 
   constructor(private auth: AuthService,
@@ -186,9 +188,21 @@ export class CompraComponent implements OnInit{
       return;
     }
 
-    const usuarioId = usuarioActual.id; // ahora tienes el id numérico
+    const usuarioId = usuarioActual.id;
+    if (usuarioActual.role === 'admin') {
+      console.warn('El admin no tiene perfil en usuarios_perfil. Saltando carga de perfil.');
+    } else {
+      const usuarioPerfil = await this.UsuarioService.getById(usuarioId);
 
-    // Validar reservas seleccionadas
+      if (!usuarioPerfil) {
+        alert('Usuario no encontrado en usuarios_perfil.');
+        return;
+      }
+
+      console.log("Perfil encontrado:", usuarioPerfil);
+    }
+
+
     if (this.reservaSeleccionadaIds$.getValue().length === 0) {
       alert('Debe seleccionar al menos una reserva');
       return;
@@ -196,8 +210,9 @@ export class CompraComponent implements OnInit{
 
     let subtotal = 0;
     const boletos: BoletoI[] = [];
+    const boletosIds: number[] = [];
 
-    // Generar boletos y subtotal
+    // --- CREAR BOLETOS ---
     this.reservaSeleccionadaIds$.getValue().forEach(reservaId => {
       const reserva = this.reservas.find(r => r.id === reservaId);
       if (!reserva) return;
@@ -205,41 +220,49 @@ export class CompraComponent implements OnInit{
       const precioPorAsiento = 100;
       subtotal += precioPorAsiento * reserva.asientos_etiquetas.length;
 
+      const boletoId = Date.now() + Math.floor(Math.random() * 10000);
+
       const boleto: BoletoI = {
-        id: Date.now() + Math.random(),
-        compra_id: '', // se asignará luego
+        id: boletoId,
+        compra_id: 0, // se asignará más abajo
         funcion_id: reserva.funcion_id,
-        asiento_id: reserva.asientos_etiquetas.map(a => parseInt(a.replace(/\D/g, ''))),
+        asiento_id: reserva.asientos_etiquetas.map(a =>
+          parseInt(a.replace(/\D/g, ''))
+        ),
         usuario_id: usuarioId,
         precio: precioPorAsiento,
-        promocion_id: this.promoSeleccionadaId$.getValue() ? [this.promoSeleccionadaId$.getValue()!] : [],
+        promocion_id: this.promoSeleccionadaId$.getValue()
+          ? [this.promoSeleccionadaId$.getValue()!]
+          : [],
         estado: EstadoBoleto.EMITIDO,
-        fecha_emision: new Date(),
+        fecha_emision: new Date()
       };
 
       boletos.push(boleto);
+      boletosIds.push(boletoId);
     });
 
+    // --- CALCULAR ---
     const impuestos = subtotal * 0.19;
     let total = subtotal + impuestos;
 
     const promoId = this.promoSeleccionadaId$.getValue();
     const promocionesAplicadas: number[] = [];
+
     if (promoId) {
       const promo = this.promociones.find(p => p.id === promoId);
       if (promo && promo.activo) {
         promocionesAplicadas.push(promo.id);
-        if (promo.tipo === TipoPromocion.PORCENTAJE) {
-          total *= (1 - promo.valor / 100);
-        } else if (promo.tipo === TipoPromocion.MONTO) {
-          total -= promo.valor;
-        }
+        if (promo.tipo === TipoPromocion.PORCENTAJE) total *= (1 - promo.valor / 100);
+        else if (promo.tipo === TipoPromocion.MONTO) total -= promo.valor;
       }
     }
 
-    // Crear compra
+    // --- CREAR COMPRA ---
+    const compraId = Date.now();
+
     const compra: CompraI = {
-      id: Date.now(),
+      id: compraId,
       reserva: this.reservaSeleccionadaIds$.getValue(),
       subtotal,
       impuestos,
@@ -247,32 +270,29 @@ export class CompraComponent implements OnInit{
       promociones_aplicadas: promocionesAplicadas,
       estado: EstadoCompra.COMPLETADA,
       created_at: new Date(),
+      boletos: boletosIds
     };
 
-    // Asociar compra_id a cada boleto
-    boletos.forEach(b => (b.compra_id = compra.id.toString()));
+    // --- ASIGNAR compra_id A CADA BOLETO ---
+    boletos.forEach(b => b.compra_id = compraId);
 
-    // Guardar en usuario
-    const usuarioService = new UsuarioService(this.auth['dbService']); // inyecta IndexedDBService
+    // --- GUARDAR EN USUARIO ---
+    const usuarioService = new UsuarioService(this.auth['dbService']);
     const usuario = await usuarioService.getById(usuarioId);
 
     if (!usuario) {
-      alert('Usuario no encontrado en DB');
+      alert('Usuario no encontrado');
       return;
     }
 
-    // Asegurarse que existan los arrays
-    if (!usuario.compras) usuario.compras = [];
-    if (!usuario.boletos) usuario.boletos = [];
-
-    usuario.compras.push(compra);
-    usuario.boletos.push(...boletos);
+    if (!usuario.historial) usuario.historial = [];
+    usuario.historial.push(compraId);
 
     await usuarioService.update(usuario);
 
     alert(`Compra confirmada! Total: ${total.toFixed(2)}`);
 
-    // Limpiar selección
+    // limpiar selección
     this.reservaSeleccionadaIds$.next([]);
     this.promoSeleccionadaId$.next(null);
   }

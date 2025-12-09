@@ -18,6 +18,7 @@ import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelic
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { PeliculaFormComponent } from './components/formulario-pelicula/formulario-pelicula.component';
+import { CompraComponent } from './pages/compra/compra.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { PeliculaFormComponent } from './components/formulario-pelicula/formular
     DetallePeliculaComponent,
     AsientosComponent,
     HeroComponent,
-    PeliculaFormComponent
+    PeliculaFormComponent,
+    CompraComponent
   ],
   imports: [
     BrowserModule,

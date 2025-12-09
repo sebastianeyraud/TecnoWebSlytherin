@@ -9,4 +9,5 @@ export interface CompraI {
   promociones_aplicadas: number[];
   estado: EstadoCompra;
   created_at: Date;
+  boletos: number[];
 }

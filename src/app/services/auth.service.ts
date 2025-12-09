@@ -13,26 +13,32 @@ export class AuthService {
 
   // LOGIN
   async login(email: string, password: string): Promise<boolean> {
-  await this.dbService.dbReady;
-  const store = this.dbService.getStore('users');
-  const req = store.get(email);
+    await this.dbService.dbReady;
+    const store = this.dbService.getStore('users');
 
-  return new Promise((resolve) => {
-    req.onsuccess = (event: any) => {
-      const user = event.target.result;
-      if (!user || user.password !== password) {
-        resolve(false);
-        return;
-      }
+    // Buscar usuario por email usando un cursor
+    return new Promise(resolve => {
+      const index = store.index('email');
+      const req = index.get(email);
 
-      const payload = { email: user.email, role: user.rol }; // 'admin' o 'usuario'
-      localStorage.setItem(this.STORAGE_KEY, btoa(JSON.stringify(payload)));
-      resolve(true);
-    };
+      req.onsuccess = (event: any) => {
+        const user = event.target.result;
 
-    req.onerror = () => resolve(false);
-  });
-}
+        if (!user || user.password !== password) {
+          resolve(false);
+          return;
+        }
+
+        const payload = { id: user.id, email: user.email, role: user.rol };
+        localStorage.setItem(this.STORAGE_KEY, btoa(JSON.stringify(payload)));
+
+        resolve(true);
+      };
+
+      req.onerror = () => resolve(false);
+    });
+  }
+
 
 
   // REGISTRO
@@ -40,22 +46,28 @@ export class AuthService {
     await this.dbService.dbReady;
     const store = this.dbService.getStore('users', 'readwrite');
 
-    // Verificar si ya existe
-    const existing: any = await new Promise((resolve, reject) => {
-      const req = store.get(user.getEmail());
+    // Verificar si ya existe usando índice email
+    const existing = await new Promise((resolve, reject) => {
+      const index = store.index('email');
+      const req = index.get(user.getEmail());
+
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
 
-    if (existing) throw new Error('Usuario ya registrado');
+    if (existing) {
+      throw new Error('Usuario ya registrado');
+    }
 
-    // Guardar en IndexedDB
-    await new Promise((resolve, reject) => {
+    // Guardar usuario
+    return new Promise((resolve, reject) => {
       const req = store.add(user.toJSON());
-      req.onsuccess = () => resolve(true);
+
+      req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
   }
+
 
   // Obtener todos los usuarios
   async getAllUsuarios(): Promise<Usuario[]> {
@@ -91,12 +103,16 @@ export class AuthService {
   }
 
   // Obtener usuario actual (solo email)
-  getCurrentUser(): { email: string } | null {
+  getCurrentUser(): { id: number; email: string; role: string } | null {
     const token = localStorage.getItem(this.STORAGE_KEY);
     if (!token) return null;
     try {
       const decoded = JSON.parse(atob(token));
-      return { email: decoded.email };
+      return {
+        id: decoded.id,
+        email: decoded.email,
+        role: decoded.role
+      };
     } catch {
       return null;
     }
