@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
+import { User } from '../models/interfaces/user';
 import { Usuario } from '../models/usuario.model';
 import { DataService } from './data.service';
 import { firstValueFrom } from 'rxjs';
