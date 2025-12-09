@@ -63,7 +63,9 @@
       </div>
 
       <!-- Botón para editar -->
-      <button class="btn-edit" (click)="editarPelicula(pelicula)">Editar</button>
+       <div *ngIf="auth.isAdmin()">
+        <button class="btn-edit" (click)="editarPelicula(pelicula)">Editar</button>
+      </div>
 
       <!-- Formulario modal -->
       <app-formulario-pelicula

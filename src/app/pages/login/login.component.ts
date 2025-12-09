@@ -1,44 +1,58 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from 'src/app/models/interfaces/user';
-import { AuthService } from 'src/app/services/auth.service';
-
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
+  formularioLogin!: FormGroup;
+  loginError = false;
 
   constructor(
-    private router: Router,
-    private authService: AuthService
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
-  public formularioLogin: FormGroup = new
-  FormGroup({
-    email: new FormControl(null),
-    password: new FormControl(null)
-  })
+  ngOnInit(): void {
+    this.formularioLogin = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
 
-  public iniciarSesion():void{
+  /**
+   * Método principal para iniciar sesión usando el formulario reactivo.
+   */
+  async iniciarSesion(): Promise<void> {
     if (this.formularioLogin.invalid) {
-      console.log('Está malo el formulario')
       this.formularioLogin.markAllAsTouched();
       return;
     }
 
-    const usuario = this.formularioLogin.value as User;
-    console.log(usuario)
-    this.authService.login(usuario.email, usuario.password).then(ok => {
+    const { email, password } = this.formularioLogin.value;
+
+    try {
+      const ok = await this.authService.login(email, password);
+
       if (ok) {
-        this.router.navigateByUrl('');
+        this.router.navigateByUrl('/').then(() => {
+          // Después de navegar, forzamos recarga para actualizar el header
+          window.location.reload();
+        });
       } else {
+        this.loginError = true;
         alert('Credenciales incorrectas');
       }
-    });
-  }
 
+    } catch (error: any) {
+      this.loginError = true;
+      alert(error.message || 'Error iniciando sesión');
+    }
+  }
 }

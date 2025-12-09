@@ -1,25 +1,34 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+//Componentes
+import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
-import { PrincipalComponent } from './pages/principal/principal.component';
+import { RegistroComponent } from './pages/registro/registro.component';
+import { PerfilComponent} from './pages/perfil/perfil.component';
 import { AdminComponent } from './pages/admin/admin.component';
-import { ProteccionGuard } from './guards/proteccion.guard';
-import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 import { CarteleraComponent } from './pages/cartelera/cartelera.component';
 import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { CompraComponent } from './pages/compra/compra.component';
+import { MembresiaComponent } from './components/membresia/membresia.component';
+
+//Guards
+import { AuthGuard } from './guards/auth.guard';
+import { ProteccionGuard } from './guards/proteccion.guard';
+import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: PrincipalComponent
+    component: HomeComponent,
   },
   {
     path: 'login',
     component: LoginComponent
   },
+  { path: 'registro', component: RegistroComponent },
+  { path: 'perfil', component: PerfilComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -30,24 +39,21 @@ const routes: Routes = [
     component: CarteleraComponent
   },
   {
-    path: 'pelicula/:titulo',
-    component: DetallePeliculaComponent
+    path: 'comprar',
+    component: CompraComponent
   },
   {
-    path: 'pelicula/wicked',
+    path: 'pelicula/:titulo',
     component: DetallePeliculaComponent
   },
   { path: 'asientos',
     component: AsientosComponent
 
   },
-  { path: 'comprar',
-    component: CompraComponent
-
-  },
+  { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '',
   }
 ];
 
@@ -56,3 +62,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+

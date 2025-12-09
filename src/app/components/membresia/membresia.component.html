@@ -1,0 +1,32 @@
+<div class="memberships-container">
+  <div class="card-grid">
+    <div *ngFor="let m of memberships" class="membership-card" 
+         [ngClass]="{
+           'blue-bg': m === 'INSIDER',
+           'yellow-bg': m === 'PREMIERE',
+           'red-bg': m === 'A_LIST'
+         }">
+      
+      <div class="header">
+        <h3>{{ m }}</h3>
+        <button class="join-btn" (click)="toggleMembership(m)">
+          {{ hasMembership(m) ? 'Salir' : 'Unite' }}
+        </button>
+      </div>
+
+      <p class="subtitle">
+        {{ m === 'INSIDER' ? 'Beneficios gratuitos para todos los fanáticos del cine' :
+           m === 'PREMIERE' ? 'Vale la pena aumentar sus beneficios' :
+           'Vea hasta 4 películas cada semana' }}
+      </p>
+
+      <hr>
+
+      <p class="description">
+        {{ m === 'INSIDER' ? 'Disfruta de recompensas de $5, 50% de descuento en entradas los martes y miércoles, y mucho más. Los miembros de Insiders pueden obtener más beneficios gratis al desbloquear una mejora a AMC Stubs Premiere GO!™.' :
+           m === 'PREMIERE' ? '¡No pagues cargos por boletos en línea! Además, gana $5 en recompensas 5 veces más rápido que con los miembros Insiders, y mucho más por solo $17.99 + impuestos al año.' :
+           'Reserva tus entradas GRATIS para ver películas en cualquier formato, incluyendo Dolby Cinema®, IMAX® y más. Desde solo $19.99 + impuestos al mes. Más información.' }}
+      </p>
+    </div>
+  </div>
+</div>

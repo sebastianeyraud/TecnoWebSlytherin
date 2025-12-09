@@ -1,7 +1,7 @@
 .detalle-page {
   min-height: 100vh;
   background: var(--background);
-  color: #fff;
+  color: #9a9a9a;
   display: flex;
   flex-direction: column;
 }

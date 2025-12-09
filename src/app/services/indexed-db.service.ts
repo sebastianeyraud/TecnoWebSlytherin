@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class IndexedDBService {
   private dbName = 'AMC_DB';
-  private dbVersion = 12;
+  private dbVersion = 13;
   private db!: IDBDatabase;
   public dbReady!: Promise<void>;
 

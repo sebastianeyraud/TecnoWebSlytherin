@@ -15,19 +15,19 @@ export class Usuario implements User{
     private historial: number[]
     private notificaciones: number[]
 
-    constructor(email:string,password:string, id:number){
+    constructor(email:string,password:string, id:number, nombre?: string){
         this.rol = "usuario"
-        this.nombre = email.split('@')[0]
+        this.nombre = nombre ?? email.split('@')[0]
         this.email = email
         this.password = password
         this.membresia = Membresia.NONE
 
         this.created_at = new Date();
-
         this.historial = [];
         this.notificaciones = [];
         this.id=id;
     }
+
 
     toJSON() {
         return {

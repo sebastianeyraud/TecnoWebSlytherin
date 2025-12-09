@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { IndexedDBService } from './indexed-db.service';
 import { UsuarioI } from '../models/interfaces/usuario-i';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
   private store = 'usuarios_perfil';
+  private currentUserSubject = new BehaviorSubject<UsuarioI | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private db: IndexedDBService) {}
 
@@ -37,9 +40,21 @@ export class UsuarioService {
   update(item: UsuarioI): Promise<void> {
     return new Promise((resolve, reject) => {
       const req = this.db.getStore(this.store, 'readwrite').put(item);
-      req.onsuccess = () => resolve();
+      req.onsuccess = () => {
+        resolve();
+        // Aquí avisamos que el usuario cambió
+        this.setCurrentUser(item);
+      };
       req.onerror = () => reject(req.error);
     });
+  }
+
+  setCurrentUser(user: UsuarioI | null) {
+    this.currentUserSubject.next(user);
+  }
+
+  getCurrentUser(): UsuarioI | null {
+    return this.currentUserSubject.getValue();
   }
 
   delete(id: number): Promise<void> {

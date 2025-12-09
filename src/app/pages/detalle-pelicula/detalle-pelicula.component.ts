@@ -45,22 +45,25 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     const titulo = decodeURIComponent(this.route.snapshot.paramMap.get('titulo')!);
 
-    // 🔹 Suscribirse al observable para que la UI se actualice automáticamente
     this.subscription = this.peliculaService.peliculas$.subscribe(pelis => {
+      if (!pelis.length) return; // esperar a que haya datos
+
       this.peliculas = pelis;
       const raw = pelis.find(p => p.titulo === titulo);
+
       if (!raw) {
         console.warn('No se encontró la película:', titulo);
         this.cargando = false;
         return;
       }
+
       this.pelicula = raw;
       this.loadActoresYFunciones();
     });
 
-    // 🔹 Inicializar la carga desde IndexedDB
-    this.peliculaService.getAll();
+    this.peliculaService.getAll(); // carga async desde IndexedDB
   }
+
 
   ngAfterViewInit(): void {}
 

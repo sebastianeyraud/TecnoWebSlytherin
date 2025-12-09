@@ -13,7 +13,7 @@ export class ProteccionGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | UrlTree {
-    if (this.auth.isLogged()) {
+    if (this.auth.isLoggedIn()) {
       return true;
     }
     return this.router.parseUrl('/login');
