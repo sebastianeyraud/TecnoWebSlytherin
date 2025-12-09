@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router'; // Importa Router para la navegación
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { Usuario } from 'src/app/models/usuario.model'; // tu modelo de Usuario
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.css'] // Asegúrate de que este sea el nombre correcto de tu archivo CSS/SCSS
+  styleUrls: ['./registro.component.css']
 })
 export class RegistroComponent {
 
@@ -18,10 +20,13 @@ export class RegistroComponent {
 
   registroError: string = '';
 
-  constructor(private router: Router) { } // Inyecta el Router
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
-  onSubmit() {
-    this.registroError = ''; // Limpiar errores anteriores
+  async onSubmit() {
+    this.registroError = '';
 
     // Validaciones básicas
     if (!this.registroData.nombre || !this.registroData.email || !this.registroData.confirmEmail || !this.registroData.password || !this.registroData.confirmPassword) {
@@ -39,12 +44,21 @@ export class RegistroComponent {
       return;
     }
 
-    // Aquí iría la lógica para enviar los datos al backend
-    console.log('Datos de registro:', this.registroData);
+    try {
+      // Crear instancia de Usuario usando tu modelo
+      const nuevoUsuario = new Usuario(
+        this.registroData.nombre,
+        this.registroData.email,
+        this.registroData.password
+      );
 
-    // Si el registro es exitoso, podrías redirigir al usuario al login o a una página de bienvenida
-    // Por ahora, simulamos un registro exitoso y redirigimos a /login
-    alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-    this.router.navigate(['/login']); // Redirige al usuario a la página de login
+      // Guardar en backend usando AuthService
+      await this.authService.registrar(nuevoUsuario);
+
+      alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+      this.router.navigate(['/login']);
+    } catch (error: any) {
+      this.registroError = error.message || 'Error en el registro.';
+    }
   }
 }

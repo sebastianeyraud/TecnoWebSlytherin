@@ -16,18 +16,17 @@ export class Usuario implements User{
     private historial: Compra[]
     private notificaciones: Alerta[]
 
-    constructor(email:string,password:string){
-        this.rol = "usuario"
-        this.nombre = email.split('@')[0]
-        this.email = email
-        this.password = password
-        this.membresia = Membresia.NONE
-
+    constructor(email: string, password: string, nombre?: string) {
+        this.rol = "usuario";
+        this.email = email;
+        this.password = password;
+        this.nombre = nombre ?? email.split('@')[0];
+        this.membresia = Membresia.NONE;
         this.created_at = new Date();
-
         this.historial = [];
         this.notificaciones = [];
     }
+
 
     toJSON() {
         return {
