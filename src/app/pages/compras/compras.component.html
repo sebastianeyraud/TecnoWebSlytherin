@@ -1,0 +1,79 @@
+<div class="hero-section" *ngIf="heroData$ | async as data; else loadingBlock" 
+     [style.background]="data.imagenFondo">
+  <div class="hero-content">
+    <h1>{{ data.titulo }}</h1>
+    <p>{{ data.subtitulo }}</p>
+  </div>
+</div>
+
+<ng-template #loadingBlock>
+  <div class="hero-section loading-hero">
+    <div class="hero-content">
+      <h2>Cargando...</h2>
+    </div>
+  </div>
+</ng-template>
+
+<div class="main-container">
+
+  <div class="columna promo-col">
+    <h2>💎 Promociones VIP</h2>
+    
+    <div class="card">
+      <h3>2x1 en Entradas</h3>
+      <p style="font-size: 0.9rem; color: #777;">Beneficio exclusivo de martes.</p>
+      <button class="btn-secundario">Aplicar</button>
+    </div>
+
+    <div class="card">
+      <h3>Combo Pareja</h3>
+      <p style="font-size: 0.9rem; color: #777;">Palomitas grandes + 2 Bebidas.</p>
+      <button class="btn-secundario">Agregar</button>
+    </div>
+  </div>
+
+  <div class="columna reservas-col">
+    <h2>🎟️ Tu Ticket</h2>
+    
+    <div class="resumen-reserva">
+      <p><strong>Película</strong> <span>Wicked</span></p>
+      <p><strong>Cine</strong> <span>Mall Plaza</span></p>
+      <p><strong>Sala</strong> <span>4 (IMAX)</span></p>
+      <p><strong>Asientos</strong> <span>F4, F5</span></p>
+      <p><strong>Hora</strong> <span>18:30</span></p>
+      <hr>
+      <small style="display:block; text-align:center; color:#888;">Presenta tu código QR al entrar.</small>
+    </div>
+  </div>
+
+  <div class="columna compra-col">
+    <h2>💳 Pago Seguro</h2>
+    
+    <div class="total-section">
+      <h3>Total a pagar</h3>
+      <span class="precio">$15.000</span>
+    </div>
+
+    <form class="form-pago">
+      <label>Titular de la tarjeta</label>
+      <input type="text" placeholder="Nombre del Titular">
+      
+      <label>Número de tarjeta</label>
+      <input type="text" placeholder="0000 0000 0000 0000">
+      
+      <div class="form-row">
+        <div>
+          <label>Expira</label>
+          <input type="text" placeholder="MM/AA">
+        </div>
+        <div>
+          <label>CVV</label>
+          <input type="text" placeholder="Codigo de seguridad">
+        </div>
+      </div>
+      
+      <button type="button" class="btn-pagar" (click)="pagar()">FINALIZAR COMPRA</button>
+    </form>
+  </div>
+
+</div>
