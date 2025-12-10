@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { map, delay } from 'rxjs/operators';
 import { ReservaI } from 'src/app/models/interfaces/reserva-i';
 import { EstadoReserva } from 'src/app/models/estado-reserva';
 import { PromocionI } from 'src/app/models/interfaces/promocion-i';
 import { AplicableA } from 'src/app/models/aplicable-a';
 import { TipoPromocion } from 'src/app/models/tipo-promocion';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { EstadoCompra } from 'src/app/models/estado-compra';
 import { CompraI } from 'src/app/models/interfaces/compra-i';
 import { BoletoI } from 'src/app/models/interfaces/boleto-i';
@@ -18,32 +18,18 @@ import { UsuarioService } from 'src/app/services/usuario.service';
   templateUrl: './compra.component.html',
   styleUrls: ['./compra.component.css']
 })
-/**
- * - sacar de localstorage y mostrar v (depende de cómo guarden la reserva y promo seleccionao)
- * - seleccionar v 
- * - calcular precio (Observable) v (El promo lo puso como un descuento, hay q cambiar cómo va a ser, sobretodo si aplica a una peli específica)
- * - confirmar compra v
- * - crear boleta/boleto v (No la guardó en compra...)
- * - guardar compra con boleto/boleta en historial de usuario
- * - *compra no hecha, cuidao al cerrar
- */
+export class CompraComponent implements OnInit {
 
-// Mejor hacer merge antes de seguir
-export class CompraComponent implements OnInit{
-
-  constructor(private auth: AuthService,
-    private UsuarioService: UsuarioService
-  ){}
+  heroData$: Observable<any> | undefined;
 
   reservas: ReservaI[] = [];
   promociones: PromocionI[] = [];
 
-  // Para seleccionar reservas y promociones
-  reservaSeleccionadaIds: number[] = []; // array de IDs de reservas seleccionadas
-  promoSeleccionadaId?: number;          // ID de la promoción seleccionada
+  reservaSeleccionadaIds: number[] = [];
+  promoSeleccionadaId?: number;
 
-  private reservaSeleccionadaIds$ = new BehaviorSubject<number[]>([]);
-  private promoSeleccionadaId$ = new BehaviorSubject<number | null>(null);
+  public reservaSeleccionadaIds$ = new BehaviorSubject<number[]>([]);
+  public promoSeleccionadaId$ = new BehaviorSubject<number | null>(null);
 
   total$: Observable<number> = combineLatest([
     this.reservaSeleccionadaIds$,
@@ -52,15 +38,13 @@ export class CompraComponent implements OnInit{
     map(([reservaIds, promoId]) => {
       let subtotal = 0;
 
-      // Sumar precio de reservas (ejemplo: 100 por reserva)
       reservaIds.forEach(id => {
         const r = this.reservas.find(res => res.id === id);
         if (r) {
-          subtotal += r.asientos_etiquetas.length * 100; // precio por asiento
+          subtotal += r.asientos_etiquetas.length * 100;
         }
       });
 
-      // Aplicar promoción si existe
       if (promoId) {
         const promo = this.promociones.find(p => p.id === promoId);
         if (promo && promo.activo) {
@@ -71,16 +55,31 @@ export class CompraComponent implements OnInit{
           }
         }
       }
-
-      return subtotal;
+      return Math.max(0, subtotal);
     })
   );
 
+  constructor(
+    private auth: AuthService,
+    private usuarioService: UsuarioService
+  ) {}
+
   ngOnInit(): void {
+    this.heroData$ = of({
+      titulo: 'Wicked',
+      subtitulo: 'Disfruta de tu pelicula :)',
+      imagenFondo: 'linear-gradient(90deg, #501634 0%, #7d2252 100%)' 
+    }).pipe(
+      delay(2000)
+    );
+
     this.initReservas();
     this.initPromociones();
+    this.cargarDatosLocalStorage();
+  }
 
-    // Cargar desde localStorage
+
+  cargarDatosLocalStorage() {
     const reservasRaw = localStorage.getItem('reservas');
     this.reservas = reservasRaw
       ? JSON.parse(reservasRaw).map((r: any) => ({
@@ -110,36 +109,35 @@ export class CompraComponent implements OnInit{
       current = current.filter(id => id !== reserva.id);
     }
     this.reservaSeleccionadaIds$.next([...current]);
+    this.reservaSeleccionadaIds = [...current];
   }
 
   onPromoChange(id: number) {
-    this.promoSeleccionadaId$.next(id);
+    if (this.promoSeleccionadaId$.getValue() === id) {
+      this.promoSeleccionadaId$.next(null);
+      this.promoSeleccionadaId = undefined;
+    } else {
+      this.promoSeleccionadaId$.next(id);
+      this.promoSeleccionadaId = id;
+    }
   }
-
 
   private initReservas() {
     const reservasKey = 'reservas';
     if (!localStorage.getItem(reservasKey)) {
       const reservasSeed: ReservaI[] = [
         {
-          id: 1,
-          funcion_id: 101,
-          asientos_etiquetas: ['A1', 'A2'],
-          created_at: new Date(),
-          expires_at: new Date(Date.now() + 1000 * 60 * 15), // expira en 15 min
+          id: 1, funcion_id: 101, asientos_etiquetas: ['A1', 'A2'],
+          created_at: new Date(), expires_at: new Date(Date.now() + 1000 * 60 * 15),
           status: EstadoReserva.ACTIVA,
         },
         {
-          id: 2,
-          funcion_id: 102,
-          asientos_etiquetas: ['B3', 'B4', 'B5'],
-          created_at: new Date(),
-          expires_at: new Date(Date.now() + 1000 * 60 * 20),
+          id: 2, funcion_id: 102, asientos_etiquetas: ['B3', 'B4', 'B5'],
+          created_at: new Date(), expires_at: new Date(Date.now() + 1000 * 60 * 20),
           status: EstadoReserva.CONFIRMADA,
         },
       ];
       localStorage.setItem(reservasKey, JSON.stringify(reservasSeed));
-      console.log('Reservas de prueba creadas en localStorage');
     }
   }
 
@@ -148,39 +146,22 @@ export class CompraComponent implements OnInit{
     if (!localStorage.getItem(promocionesKey)) {
       const promocionesSeed: PromocionI[] = [
         {
-          id: 1,
-          codigo: 'PROMO10',
-          nombre: 'Descuento 10%',
-          descripcion: '10% de descuento en todas las películas',
-          tipo: TipoPromocion.PORCENTAJE,
-          valor: 10,
-          aplicable_a: AplicableA.COMPRA,
-          fecha_inicio: new Date(),
-          fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 días
-          activo: true,
-          created_at: new Date(),
-          updated_at: new Date(),
+          id: 1, codigo: 'PROMO10', nombre: 'Descuento 10%', descripcion: '10% OFF en todo',
+          tipo: TipoPromocion.PORCENTAJE, valor: 10, aplicable_a: AplicableA.COMPRA,
+          fecha_inicio: new Date(), fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+          activo: true, created_at: new Date(), updated_at: new Date(),
         },
         {
-          id: 2,
-          codigo: 'PROMO5',
-          nombre: 'Descuento $5',
-          descripcion: '$5 de descuento en entradas VIP',
-          tipo: TipoPromocion.MONTO,
-          valor: 5,
-          aplicable_a: AplicableA.BOLETO,
-          fecha_inicio: new Date(),
-          fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15), // 15 días
-          activo: true,
-          created_at: new Date(),
-          updated_at: new Date(),
+          id: 2, codigo: 'VIP5', nombre: 'Descuento $5', descripcion: '$5 OFF VIP',
+          tipo: TipoPromocion.MONTO, valor: 5, aplicable_a: AplicableA.BOLETO,
+          fecha_inicio: new Date(), fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15),
+          activo: true, created_at: new Date(), updated_at: new Date(),
         },
       ];
       localStorage.setItem(promocionesKey, JSON.stringify(promocionesSeed));
-      console.log('Promociones de prueba creadas en localStorage');
     }
   }
-
+  
   async confirmarCompra() {
     const usuarioActual = this.auth.getCurrentUser();
     if (!usuarioActual) {
@@ -189,22 +170,17 @@ export class CompraComponent implements OnInit{
     }
 
     const usuarioId = usuarioActual.id;
-    if (usuarioActual.role === 'admin') {
-      console.warn('El admin no tiene perfil en usuarios_perfil. Saltando carga de perfil.');
-    } else {
-      const usuarioPerfil = await this.UsuarioService.getById(usuarioId);
 
+    if (usuarioActual.role !== 'admin') {
+      const usuarioPerfil = await this.usuarioService.getById(usuarioId);
       if (!usuarioPerfil) {
-        alert('Usuario no encontrado en usuarios_perfil.');
+        alert('Usuario no encontrado en la base de datos.');
         return;
       }
-
-      console.log("Perfil encontrado:", usuarioPerfil);
     }
 
-
     if (this.reservaSeleccionadaIds$.getValue().length === 0) {
-      alert('Debe seleccionar al menos una reserva');
+      alert('Debe seleccionar al menos una reserva para continuar.');
       return;
     }
 
@@ -212,7 +188,6 @@ export class CompraComponent implements OnInit{
     const boletos: BoletoI[] = [];
     const boletosIds: number[] = [];
 
-    // --- CREAR BOLETOS ---
     this.reservaSeleccionadaIds$.getValue().forEach(reservaId => {
       const reserva = this.reservas.find(r => r.id === reservaId);
       if (!reserva) return;
@@ -224,16 +199,12 @@ export class CompraComponent implements OnInit{
 
       const boleto: BoletoI = {
         id: boletoId,
-        compra_id: 0, // se asignará más abajo
+        compra_id: 0,
         funcion_id: reserva.funcion_id,
-        asiento_id: reserva.asientos_etiquetas.map(a =>
-          parseInt(a.replace(/\D/g, ''))
-        ),
+        asiento_id: reserva.asientos_etiquetas.map(a => parseInt(a.replace(/\D/g, '')) || 0),
         usuario_id: usuarioId,
         precio: precioPorAsiento,
-        promocion_id: this.promoSeleccionadaId$.getValue()
-          ? [this.promoSeleccionadaId$.getValue()!]
-          : [],
+        promocion_id: this.promoSeleccionadaId$.getValue() ? [this.promoSeleccionadaId$.getValue()!] : [],
         estado: EstadoBoleto.EMITIDO,
         fecha_emision: new Date()
       };
@@ -242,7 +213,6 @@ export class CompraComponent implements OnInit{
       boletosIds.push(boletoId);
     });
 
-    // --- CALCULAR ---
     const impuestos = subtotal * 0.19;
     let total = subtotal + impuestos;
 
@@ -258,9 +228,7 @@ export class CompraComponent implements OnInit{
       }
     }
 
-    // --- CREAR COMPRA ---
     const compraId = Date.now();
-
     const compra: CompraI = {
       id: compraId,
       reserva: this.reservaSeleccionadaIds$.getValue(),
@@ -273,28 +241,20 @@ export class CompraComponent implements OnInit{
       boletos: boletosIds
     };
 
-    // --- ASIGNAR compra_id A CADA BOLETO ---
     boletos.forEach(b => b.compra_id = compraId);
 
-    // --- GUARDAR EN USUARIO ---
-    const usuarioService = new UsuarioService(this.auth['dbService']);
-    const usuario = await usuarioService.getById(usuarioId);
-
-    if (!usuario) {
-      alert('Usuario no encontrado');
-      return;
+    const usuario = await this.usuarioService.getById(usuarioId);
+    if (usuario) {
+       if (!usuario.historial) usuario.historial = [];
+       usuario.historial.push(compraId);
+       await this.usuarioService.update(usuario);
     }
 
-    if (!usuario.historial) usuario.historial = [];
-    usuario.historial.push(compraId);
+    alert(`¡Compra confirmada!\nTotal final: $${total.toFixed(2)}`);
 
-    await usuarioService.update(usuario);
-
-    alert(`Compra confirmada! Total: ${total.toFixed(2)}`);
-
-    // limpiar selección
     this.reservaSeleccionadaIds$.next([]);
     this.promoSeleccionadaId$.next(null);
+    this.reservaSeleccionadaIds = [];
+    this.promoSeleccionadaId = undefined;
   }
-
 }

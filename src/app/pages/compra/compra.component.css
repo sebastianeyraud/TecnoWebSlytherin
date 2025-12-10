@@ -1,0 +1,167 @@
+/* Configuración General */
+:host {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display: block;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+/* === HERO SECTION === */
+.hero-section {
+  /* Fondo Vino Tinto / Borgoña */
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(80, 22, 52, 0.4);
+  transition: all 0.5s ease;
+}
+
+.loading-hero { background-color: #999; }
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* === GRID PRINCIPAL === */
+.main-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 0 40px 60px 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* === COLUMNAS === */
+.columna {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border-top: 5px solid transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bordes de color por columna */
+.promo-col { border-top-color: #d4af37; }   /* Dorado */
+.reservas-col { border-top-color: #501634; } /* Vino */
+.compra-col { border-top-color: #2c3e50; }   /* Azul Oscuro */
+
+h2 {
+  color: #501634;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* === CARDS INTERNAS === */
+.scroll-box {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 500px;
+  padding-right: 5px;
+}
+
+.card {
+  background: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: #d4af37; /* Brillo dorado al pasar mouse */
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card.seleccionada {
+  border-color: #501634;
+  background-color: #fcf0f5; /* Fondo rosado muy suave */
+}
+
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.badge {
+  background: #501634; color: white;
+  font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
+}
+
+.desc { font-size: 0.9rem; color: #666; margin: 5px 0; }
+.codigo { display: block; font-size: 0.75rem; color: #999; font-weight: bold; margin-bottom: 8px; }
+
+/* Botón pequeño dentro de cards */
+.btn-secundario {
+  background: transparent;
+  border: 1px solid #501634;
+  color: #501634;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.btn-secundario:hover {
+  background: #501634; color: white;
+}
+
+/* === CHECKBOXES ESTILIZADOS === */
+.reserva-row { display: flex; align-items: center; gap: 15px; }
+.check-aesthetic {
+  width: 20px; height: 20px;
+  accent-color: #501634;
+  cursor: pointer;
+}
+
+/* === SECCIÓN PAGO === */
+.total-section { text-align: right; margin-bottom: 20px; }
+.total-section h3 { margin: 0; font-size: 1rem; color: #666; }
+.precio {
+  font-size: 2.5rem;
+  color: #d4af37; /* Dorado */
+  font-weight: bold;
+}
+
+input {
+  width: 100%; padding: 12px; margin-bottom: 15px;
+  border: 1px solid #ddd; border-radius: 4px;
+  font-size: 1rem;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+.btn-pagar {
+  width: 100%;
+  padding: 15px;
+  background-color: #501634; /* Vino */
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-transform: uppercase;
+  transition: transform 0.2s;
+}
+.btn-pagar:hover { background-color: #3a0d24; transform: scale(1.02); }
+
+/* Responsive Mobile */
+@media (max-width: 900px) {
+  .main-container { grid-template-columns: 1fr; padding: 20px; }
+}
