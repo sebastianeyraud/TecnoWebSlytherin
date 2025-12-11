@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ReservaI } from 'src/app/models/interfaces/reserva-i';
 import { EstadoReserva } from 'src/app/models/estado-reserva';
 import { PromocionI } from 'src/app/models/interfaces/promocion-i';
@@ -19,8 +19,6 @@ import { UsuarioService } from 'src/app/services/usuario.service';
   styleUrls: ['./compra.component.css']
 })
 export class CompraComponent implements OnInit {
-
-  heroData$: Observable<any> | undefined;
 
   reservas: ReservaI[] = [];
   promociones: PromocionI[] = [];
@@ -65,19 +63,26 @@ export class CompraComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.heroData$ = of({
-      titulo: 'Wicked',
-      subtitulo: 'Disfruta de tu pelicula :)',
-      imagenFondo: 'linear-gradient(90deg, #501634 0%, #7d2252 100%)' 
-    }).pipe(
-      delay(2000)
-    );
-
     this.initReservas();
     this.initPromociones();
     this.cargarDatosLocalStorage();
   }
 
+  formatoTarjeta(event: any) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, '');
+    value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+    input.value = value;
+  }
+
+  formatoFecha(event: any) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    input.value = value;
+  }
 
   cargarDatosLocalStorage() {
     const reservasRaw = localStorage.getItem('reservas');
@@ -161,7 +166,7 @@ export class CompraComponent implements OnInit {
       localStorage.setItem(promocionesKey, JSON.stringify(promocionesSeed));
     }
   }
-  
+
   async confirmarCompra() {
     const usuarioActual = this.auth.getCurrentUser();
     if (!usuarioActual) {
@@ -245,9 +250,9 @@ export class CompraComponent implements OnInit {
 
     const usuario = await this.usuarioService.getById(usuarioId);
     if (usuario) {
-       if (!usuario.historial) usuario.historial = [];
-       usuario.historial.push(compraId);
-       await this.usuarioService.update(usuario);
+      if (!usuario.historial) usuario.historial = [];
+      usuario.historial.push(compraId);
+      await this.usuarioService.update(usuario);
     }
 
     alert(`¡Compra confirmada!\nTotal final: $${total.toFixed(2)}`);

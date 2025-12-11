@@ -1,21 +1,6 @@
-<div class="hero-section" *ngIf="heroData$ | async as data; else loadingBlock" 
-     [style.background]="data.imagenFondo">
-  <div class="hero-content">
-    <h1>{{ data.titulo }}</h1>
-    <p>{{ data.subtitulo }}</p>
-  </div>
-</div>
-
-<ng-template #loadingBlock>
-  <div class="hero-section loading-hero">
-    <div class="hero-content">
-      <h2>Cargando experiencia...</h2>
-    </div>
-  </div>
-</ng-template>
+<app-hero></app-hero>
 
 <div class="main-container">
-
   <div class="columna promo-col">
     <h2>Promociones</h2>
     

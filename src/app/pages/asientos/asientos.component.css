@@ -1,0 +1,90 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.container {
+  margin: 20px auto;
+  width: 300px;
+}
+
+.screen {
+  background-color: #fff;
+  height: 70px;
+  width: 100%;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transform: rotateX(-45deg); /* Efecto 3D opcional */
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.seat {
+  background-color: #444451;
+  height: 25px; /* Ajusté un poco el tamaño para que quepan bien */
+  width: 30px;
+  margin: 3px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.seat:hover {
+  transform: scale(1.1);
+}
+
+.seat.selected {
+  background-color: #6feaf6;
+}
+
+.seat.occupied {
+  background-color: #fff;
+  cursor: not-allowed;
+}
+
+.movie-container {
+  margin: 20px auto;
+  text-align: center;
+}
+
+.text {
+  margin-top: 30px;
+  font-size: 18px;
+}
+
+#movie {
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* --- ESTILO NUEVO PARA LA LEYENDA --- */
+.showcase {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #777;
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  margin: 0 auto 10px auto;
+}
+
+.showcase li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.showcase li small {
+  margin-left: 2px;
+}

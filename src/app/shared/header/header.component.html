@@ -11,10 +11,8 @@
   </div>
 
   <div class="topbar-right">
-    <!-- Carrito -->
     <button class="header-btn" routerLink="/carrito">🛒 Carrito</button>
 
-    <!-- Membresía -->
     <ng-container *ngIf="(currentUser$ | async) as user">
       <button 
         class="header-btn"
@@ -25,13 +23,11 @@
       </button>
     </ng-container>
 
-    <!-- Perfil / Logout -->
     <ng-container *ngIf="isLoggedIn$ | async; else notLoggedIn">
       <button class="header-btn" routerLink="/perfil">Perfil</button>
       <button class="header-btn" (click)="onLogout()">Cerrar sesión</button>
     </ng-container>
 
-    <!-- No logueado -->
     <ng-template #notLoggedIn>
       <button class="header-btn" routerLink="/login">👤 Iniciar sesión</button>
       <button class="header-btn" routerLink="/registro">Crear cuenta</button>
