@@ -23,6 +23,7 @@ import { HeroComponent } from './components/hero/hero.component';
 import { PeliculaFormComponent } from './components/formulario-pelicula/formulario-pelicula.component';
 import { CompraComponent } from './pages/compra/compra.component';
 import { MembresiaComponent } from './components/membresia/membresia.component';
+import { PromocionesComponent } from './pages/promociones/promociones.component';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { MembresiaComponent } from './components/membresia/membresia.component';
     HeroComponent,
     PeliculaFormComponent,
     CompraComponent,
-    MembresiaComponent
+    MembresiaComponent,
+    PromocionesComponent
   ],
   imports: [
     BrowserModule,
