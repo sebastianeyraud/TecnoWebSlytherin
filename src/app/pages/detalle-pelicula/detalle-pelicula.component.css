@@ -104,6 +104,32 @@
   transform: scale(1.08);
 }
 
+.btn-edit {
+  background-color: #ffb347; 
+  color: #000000;
+  padding: 12px 24px;         
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;            
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  margin-top: 16px;           
+  
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-edit:hover {
+  background-color: #ffd54f; 
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(255, 213, 79, 0.7);
+}
+
+.btn-edit:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
 
 .hero-title {
   margin: 0 0 8px;
@@ -218,6 +244,7 @@
 }
 
 .detalle-info-section {
+  color: #ffffff;
   background: var(--burgundy);
   padding: 24px 48px 40px;
 }
@@ -334,6 +361,7 @@
 
 
 .detalle-horario-section {
+  color: #ffffff;
   padding: 24px 48px 40px;
   background: #741b47;
 }
