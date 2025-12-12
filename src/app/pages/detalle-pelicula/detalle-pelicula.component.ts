@@ -46,7 +46,7 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     const titulo = decodeURIComponent(this.route.snapshot.paramMap.get('titulo')!);
 
     this.subscription = this.peliculaService.peliculas$.subscribe(pelis => {
-      if (!pelis.length) return; // esperar a que haya datos
+      if (!pelis.length) return; 
 
       this.peliculas = pelis;
       const raw = pelis.find(p => p.titulo === titulo);
@@ -85,7 +85,6 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
       .map(id => allFunciones.find(f => f.id === id))
       .filter(f => f != null) as FuncionI[];
 
-    // Generar días únicos
     const diasSet = new Set<string>();
     this.funciones.forEach(f => {
       const dia = new Date(f.start_time).toLocaleDateString('es-ES', { weekday: 'long' });
@@ -93,7 +92,6 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     });
     this.diasDisponibles = Array.from(diasSet);
 
-    // Agrupar funciones por sala
     const salasMap: Record<number, any> = {};
     this.funciones.forEach(f => {
       if (!salasMap[f.sala]) {
@@ -138,14 +136,12 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
   }
 
   editarPelicula(p: PeliculaI) {
-    // Clonar para no modificar el original hasta guardar
     this.pelicula = { ...p };
     this.showForm = true;
   }
 
   async onSavePelicula(pelicula: PeliculaI) {
-    await this.peliculaService.update(pelicula); // 🔹 actualizar y emitir nuevo valor
+    await this.peliculaService.update(pelicula);
     this.showForm = false;
-    // No es necesario llamar a getAll(), el observable ya refresca automáticamente
   }
 }

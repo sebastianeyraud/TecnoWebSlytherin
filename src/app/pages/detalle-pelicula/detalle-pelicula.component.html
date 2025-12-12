@@ -42,14 +42,12 @@
 
       <div class="hero-right">
         <div class="trailer-wrapper">
-          <!-- Miniatura → aparece cuando no está reproduciendo -->
           <div *ngIf="!trailerPlaying" class="trailer-thumbnail" (click)="playTrailer()">
             <img [src]="pelicula.poster_url" alt="Tráiler" class="trailer-image" />
             <button class="trailer-play">▶</button>
             <p class="trailer-label">Tráiler oficial</p>
           </div>
 
-          <!-- iFrame con el trailer -->
           <iframe
             *ngIf="trailerPlaying"
             width="560"
@@ -62,12 +60,10 @@
         </div>
       </div>
 
-      <!-- Botón para editar -->
        <div *ngIf="auth.isAdmin()">
         <button class="btn-edit" (click)="editarPelicula(pelicula)">Editar</button>
       </div>
 
-      <!-- Formulario modal -->
       <app-formulario-pelicula
         [visible]="showForm"
         [pelicula]="pelicula"
@@ -135,9 +131,6 @@
   </section>
 
   <section *ngIf="selectedTab === 'horario'" class="detalle-horario-section">
-
-    <!-- Tabs de días (por ahora estáticos) -->
-    <!-- Tabs de días dinámicos -->
     <div class="dias-tabs">
       <button
         *ngFor="let dia of diasDisponibles; let i = index"
@@ -148,15 +141,12 @@
     </div>
 
 
-    <!-- Agrupamos funciones por sala -->
     <div *ngFor="let grupo of funcionesAgrupadas" class="cine-bloque">
 
-      <!-- Encabezado con nombre de la sala -->
       <div class="cine-header">
         <span>{{ grupo.sala }}</span>
       </div>
 
-      <!-- Formatos disponibles -->
       <div class="formato-row">
         <button class="tag-formato"
                 *ngFor="let formato of grupo.formatos">
@@ -168,12 +158,15 @@
         *Los horarios aquí expuestos representan el inicio de cada función
       </p>
 
-      <!-- Botones con horarios -->
       <div class="horas-row">
         <button
           class="hora-btn"
           *ngFor="let f of grupo.funciones"
-          [routerLink]="['/asientos']"
+          [routerLink]="['/asientos', pelicula.titulo]"
+          [queryParams]="{
+            sala: grupo.sala,
+            hora: f.start_time
+          }"
         >
           {{ f.start_time | date:'HH:mm' }}
         </button>

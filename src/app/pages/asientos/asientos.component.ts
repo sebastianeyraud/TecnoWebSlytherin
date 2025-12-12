@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-asientos',
   templateUrl: './asientos.component.html',
   styleUrls: ['./asientos.component.css']
 })
-export class AsientosComponent implements OnInit {
+export class AsientosComponent implements OnInit, OnDestroy {
 
-  // --- 1. DATOS DE PELÍCULAS ---
   peliculas = [
     { nombre: 'Avengers: Endgame', precio: 10 },
     { nombre: 'Joker', precio: 12 },
@@ -15,84 +15,107 @@ export class AsientosComponent implements OnInit {
     { nombre: 'The Lion King', precio: 9 }
   ];
 
-  // Película seleccionada por defecto (la primera)
   peliculaSeleccionada = this.peliculas[0];
-
-  // --- 2. DATOS DE ASIENTOS ---
-  // Aquí guardaremos las filas generadas dinámicamente
   filas: any[] = [];
+  cantidad: number = 0;
+  total: number = 0;
 
-  // Variables para el resumen
-  cantidadSeleccionada: number = 0;
-  totalPagar: number = 0;
+  peliculaTitulo: string = '';
+  sala: string = '';
+  hora: string = '';
 
-  constructor() { }
+  // 🔥 TEMPORIZADOR
+  timer: number = 120; // 2 minutos
+  interval: any;
+  tiempoExpirado: boolean = false;
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    this.peliculaTitulo = this.route.snapshot.paramMap.get('titulo') || '';
+    this.sala = this.route.snapshot.queryParamMap.get('sala') || '';
+    this.hora = this.route.snapshot.queryParamMap.get('hora') || '';
+
     this.generarAsientos();
-    // (Opcional) Ocupamos algunos al azar para probar
-    this.ocuparAsientosAleatorios();
+    this.simularEstados(); 
     this.actualizarTotales();
+
+    this.iniciarTemporizador(); // 🔥 inicia cuenta regresiva
   }
 
-  // Genera 6 filas (A-F) con 8 asientos cada una
+  iniciarTemporizador() {
+    this.interval = setInterval(() => {
+      this.timer--;
+
+      if (this.timer <= 0) {
+        clearInterval(this.interval);
+        this.tiempoExpirado = true;
+
+        setTimeout(() => {
+          this.router.navigate(['/detalle-pelicula']);
+        }, 2000);
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+
   generarAsientos() {
-    const letras = ['A', 'B', 'C', 'D', 'E', 'F'];
-    
+    const letras = ['A','B','C','D','E','F','G','H']; 
+    const columnas = 12;
+
     this.filas = letras.map(letra => {
       return {
         letra: letra,
-        asientos: Array(8).fill(0).map((_, i) => ({
-          id: `${letra}${i + 1}`, // Ej: A1, A2
-          estado: 'libre' // Estados: 'libre', 'seleccionado', 'ocupado'
+        asientos: Array(columnas).fill(0).map((_, i) => ({
+          id: `${letra}${i + 1}`,
+          ocupado: false,
+          seleccionado: false,
+          discapacitado: false
         }))
       };
     });
   }
 
-  // Simula asientos ocupados (puedes borrar esto si los traes de BD)
-  ocuparAsientosAleatorios() {
+  simularEstados() {
+    const fijosDiscapacitados = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9'];
+
     this.filas.forEach(fila => {
       fila.asientos.forEach((asiento: any) => {
-        if (Math.random() < 0.2) { // 20% de probabilidad de estar ocupado
-          asiento.estado = 'ocupado';
+        if (fijosDiscapacitados.includes(asiento.id)) {
+          asiento.discapacitado = true;
+          return; 
+        }
+        if (Math.random() < 0.15) { 
+          asiento.ocupado = true;
         }
       });
     });
   }
 
-  // --- EVENTOS ---
-
-  // Cuando cambia el select de película
-  onCambioPelicula(event: any) {
-    const precio = Number(event.target.value);
-    const peli = this.peliculas.find(p => p.precio === precio);
-    if (peli) {
-      this.peliculaSeleccionada = peli;
-      this.actualizarTotales();
-    }
-  }
-
-  // Cuando haces clic en un asiento
-  toggleAsiento(asiento: any) {
-    if (asiento.estado === 'ocupado') return;
-
-    if (asiento.estado === 'libre') {
-      asiento.estado = 'seleccionado';
-    } else {
-      asiento.estado = 'libre';
-    }
+  cambiarPelicula(e: any) {
+    const precio = +e.target.value;
+    this.peliculaSeleccionada = this.peliculas.find(p => p.precio === precio) || this.peliculas[0];
     this.actualizarTotales();
   }
 
-  // Calcula totales
+  seleccionarAsiento(asiento: any) {
+    if (asiento.ocupado) return;
+    
+    asiento.seleccionado = !asiento.seleccionado;
+    this.actualizarTotales();
+  }
+
   actualizarTotales() {
     let contador = 0;
     this.filas.forEach(fila => {
-      contador += fila.asientos.filter((a: any) => a.estado === 'seleccionado').length;
+      contador += fila.asientos.filter((a: any) => a.seleccionado).length;
     });
-
-    this.cantidadSeleccionada = contador;
-    this.totalPagar = contador * this.peliculaSeleccionada.precio;
+    this.cantidad = contador;
+    this.total = contador * this.peliculaSeleccionada.precio;
   }
 }

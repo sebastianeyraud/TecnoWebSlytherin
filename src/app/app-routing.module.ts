@@ -46,7 +46,7 @@ const routes: Routes = [
     path: 'pelicula/:titulo',
     component: DetallePeliculaComponent
   },
-  { path: 'asientos',
+  { path: 'asientos/:titulo',
     component: AsientosComponent
 
   },
