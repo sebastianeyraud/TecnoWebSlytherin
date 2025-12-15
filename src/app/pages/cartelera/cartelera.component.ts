@@ -28,10 +28,10 @@ export class CarteleraComponent implements OnInit {
   ngOnInit(): void {
     this.peliculaService.peliculas$.subscribe(pelis => {
       this.peliculas = pelis;
-      this.peliculasFiltradas = [...pelis]; // refresca automáticamente
+      this.peliculasFiltradas = [...pelis];
     });
 
-    this.peliculaService.getAll(); // carga inicial
+    this.peliculaService.getAll();
   }
 
   async onSavePelicula(p: PeliculaI) {
@@ -53,10 +53,8 @@ export class CarteleraComponent implements OnInit {
 
 
   async getPeliculas(): Promise<void> {
-    // Traer todas las películas usando el servicio
     this.peliculas = await this.peliculasService.getAll();
 
-    // Inicializar la lista filtrada
     this.peliculasFiltradas = [...this.peliculas];
   }
 

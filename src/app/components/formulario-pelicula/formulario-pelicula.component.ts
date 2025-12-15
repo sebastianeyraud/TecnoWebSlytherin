@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { PeliculaI } from 'src/app/models/interfaces/pelicula-i';
 
 @Component({
@@ -6,8 +6,8 @@ import { PeliculaI } from 'src/app/models/interfaces/pelicula-i';
   templateUrl: './formulario-pelicula.component.html',
   styleUrls: ['./formulario-pelicula.component.css']
 })
+export class PeliculaFormComponent implements OnChanges {
 
-export class PeliculaFormComponent {
   @Input() pelicula?: PeliculaI; // si viene, es edición
   @Input() visible: boolean = false; // controlar visibilidad
   @Output() save = new EventEmitter<PeliculaI>();
@@ -20,13 +20,29 @@ export class PeliculaFormComponent {
     this.formData = this.pelicula ? { ...this.pelicula } : {};
   }
 
+  // 🔴 NUEVO: manejar selección de imagen
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.formData.poster_url = reader.result as string;
+    };
+
+    reader.readAsDataURL(file);
+  }
+
   onSubmit() {
     if (!this.formData.titulo) {
       alert('El título es obligatorio');
       return;
     }
 
-    // completar campos mínimos si se agrega
+    // completar campos mínimos si se agrega o edita
     const peliculaFinal: PeliculaI = {
       id: this.formData.id || Date.now(),
       titulo: this.formData.titulo!,

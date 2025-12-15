@@ -1,35 +1,26 @@
 <section class="hero" *ngIf="peliculasHero.length > 0">
-  <div
-    class="hero-overlay"
-    [style.background-image]="
-      'url(' + (peliculasHero[currentIndex].banner || peliculasHero[currentIndex].poster_url) + ')'
-    "
-  >
 
+  <iframe
+    class="hero-video"
+    [src]="trailerUrl"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+
+  <div class="hero-overlay">
     <div class="hero-content">
       <h1>{{ peliculasHero[currentIndex].titulo }}</h1>
-
       <p class="hero-subtitle">
         {{ peliculasHero[currentIndex].genero }} ·
-        {{ peliculasHero[currentIndex].duracion_min }} minutos
+        {{ peliculasHero[currentIndex].duracion_min }} min
       </p>
-
-      <p class="hero-text">
-        {{ peliculasHero[currentIndex].sinopsis }}
-      </p>
-
-      <div class="hero-cta">
-        <button class="btn-primary">Comprar tickets</button>
-        <p class="hero-date">
-          {{ peliculasHero[currentIndex].estreno | date:'dd MMM yyyy' }}
-        </p>
-      </div>
     </div>
 
     <div class="hero-arrows">
-      <button class="hero-arrow hero-arrow-prev" (click)="prev()">&lt;</button>
-      <button class="hero-arrow hero-arrow-next" (click)="next()">&gt;</button>
+      <button class="hero-arrow" (click)="prev()">❮</button>
+      <button class="hero-arrow" (click)="next()">❯</button>
     </div>
-
   </div>
+
 </section>

@@ -24,8 +24,7 @@ export class AsientosComponent implements OnInit, OnDestroy {
   sala: string = '';
   hora: string = '';
 
-  // 🔥 TEMPORIZADOR
-  timer: number = 120; // 2 minutos
+  timer: number = 120;
   interval: any;
   tiempoExpirado: boolean = false;
 
@@ -39,83 +38,91 @@ export class AsientosComponent implements OnInit, OnDestroy {
     this.generarAsientos();
     this.simularEstados(); 
     this.actualizarTotales();
-
-    this.iniciarTemporizador(); // 🔥 inicia cuenta regresiva
+    this.iniciarTemporizador();
   }
 
   iniciarTemporizador() {
     this.interval = setInterval(() => {
       this.timer--;
-
       if (this.timer <= 0) {
         clearInterval(this.interval);
         this.tiempoExpirado = true;
-
-        setTimeout(() => {
-          this.router.navigate(['/detalle-pelicula']);
-        }, 2000);
+        setTimeout(() => this.router.navigate(['/detalle-pelicula']), 2000);
       }
     }, 1000);
   }
 
   ngOnDestroy(): void {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
+    if (this.interval) clearInterval(this.interval);
   }
 
   generarAsientos() {
-    const letras = ['A','B','C','D','E','F','G','H']; 
+    const letras = ['A','B','C','D','E','F','G','H'];
     const columnas = 12;
 
-    this.filas = letras.map(letra => {
-      return {
-        letra: letra,
-        asientos: Array(columnas).fill(0).map((_, i) => ({
-          id: `${letra}${i + 1}`,
-          ocupado: false,
-          seleccionado: false,
-          discapacitado: false
-        }))
-      };
-    });
+    this.filas = letras.map(letra => ({
+      letra,
+      asientos: Array(columnas).fill(0).map((_, i) => ({
+        id: `${letra}${i + 1}`,
+        ocupado: false,
+        seleccionado: false,
+        discapacitado: false
+      }))
+    }));
   }
 
   simularEstados() {
-    const fijosDiscapacitados = ['A4', 'A5', 'A6', 'A7', 'A8', 'A9'];
-
+    const discapacitados = ['A4','A5','A6','A7','A8','A9'];
     this.filas.forEach(fila => {
-      fila.asientos.forEach((asiento: any) => {
-        if (fijosDiscapacitados.includes(asiento.id)) {
-          asiento.discapacitado = true;
-          return; 
-        }
-        if (Math.random() < 0.15) { 
-          asiento.ocupado = true;
+      fila.asientos.forEach((a: any) => {
+        if (discapacitados.includes(a.id)) {
+          a.discapacitado = true;
+        } else if (Math.random() < 0.15) {
+          a.ocupado = true;
         }
       });
     });
   }
 
-  cambiarPelicula(e: any) {
-    const precio = +e.target.value;
-    this.peliculaSeleccionada = this.peliculas.find(p => p.precio === precio) || this.peliculas[0];
-    this.actualizarTotales();
-  }
-
   seleccionarAsiento(asiento: any) {
     if (asiento.ocupado) return;
-    
     asiento.seleccionado = !asiento.seleccionado;
     this.actualizarTotales();
   }
 
   actualizarTotales() {
-    let contador = 0;
-    this.filas.forEach(fila => {
-      contador += fila.asientos.filter((a: any) => a.seleccionado).length;
-    });
-    this.cantidad = contador;
-    this.total = contador * this.peliculaSeleccionada.precio;
+    let count = 0;
+    this.filas.forEach(f =>
+      count += f.asientos.filter((a: any) => a.seleccionado).length
+    );
+    this.cantidad = count;
+    this.total = count * this.peliculaSeleccionada.precio;
   }
+
+  irAComprar() {
+  const asientosSeleccionados: string[] = [];
+
+  this.filas.forEach(fila => {
+    fila.asientos.forEach((a: any) => {
+      if (a.seleccionado) {
+        asientosSeleccionados.push(a.id);
+      }
+    });
+  });
+
+  const nuevaReserva = {
+  id: Date.now(),
+  funcion_id: this.peliculaTitulo,
+  asientos_etiquetas: asientosSeleccionados,
+  created_at: new Date(),
+  expires_at: new Date(Date.now() + 1000 * 60 * 15),
+  status: 'ACTIVA'
+};
+
+
+  localStorage.setItem('reservas', JSON.stringify([nuevaReserva]));
+
+  this.router.navigate(['/comprar']);
+}
+
 }

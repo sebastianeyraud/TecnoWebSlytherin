@@ -61,7 +61,7 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
       this.loadActoresYFunciones();
     });
 
-    this.peliculaService.getAll(); // carga async desde IndexedDB
+    this.peliculaService.getAll();
   }
 
 
@@ -110,10 +110,38 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
   }
 
   playTrailer() {
-    if (!this.pelicula.trailer) return;
-    this.trailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.pelicula.trailer + '?autoplay=1');
-    this.trailerPlaying = true;
+  if (!this.pelicula.trailer) return;
+
+  const videoId = this.getYoutubeId(this.pelicula.trailer);
+  if (!videoId) return;
+
+  const embedUrl =
+    `https://www.youtube.com/embed/${videoId}?` +
+    `autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
+
+  this.trailerUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+
+  this.trailerPlaying = true;
+}
+
+
+
+private getYoutubeId(url: string): string | null {
+  if (!url) return null;
+
+  // https://www.youtube.com/watch?v=XXXX
+  if (url.includes('watch?v=')) {
+    return url.split('v=')[1].split('&')[0];
   }
+
+  // https://youtu.be/XXXX
+  if (url.includes('youtu.be/')) {
+    return url.split('youtu.be/')[1].split('?')[0];
+  }
+
+  return null;
+}
 
   selectTab(tab: 'info' | 'horario') {
     this.selectedTab = tab;

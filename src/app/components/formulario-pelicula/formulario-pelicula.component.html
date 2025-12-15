@@ -1,5 +1,6 @@
 <div *ngIf="visible" class="form-overlay">
   <div class="form-container">
+
     <h2>{{ pelicula ? 'Editar Película' : 'Agregar Película' }}</h2>
 
     <label>Título:</label>
@@ -17,7 +18,15 @@
     <label>Clasificación:</label>
     <input type="text" [(ngModel)]="formData.clasificacion">
 
+    <label>Trailer (YouTube URL):</label>
+    <input
+      type="text"
+      placeholder="https://www.youtube.com/watch?v=XXXX"
+      [(ngModel)]="formData.trailer"
+    >
+
     <button (click)="onSubmit()">Guardar</button>
     <button (click)="onClose()">Cancelar</button>
+
   </div>
 </div>

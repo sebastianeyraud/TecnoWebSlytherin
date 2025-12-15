@@ -26,8 +26,8 @@ export class CompraComponent implements OnInit {
   reservaSeleccionadaIds: number[] = [];
   promoSeleccionadaId?: number;
 
-  public reservaSeleccionadaIds$ = new BehaviorSubject<number[]>([]);
-  public promoSeleccionadaId$ = new BehaviorSubject<number | null>(null);
+  reservaSeleccionadaIds$ = new BehaviorSubject<number[]>([]);
+  promoSeleccionadaId$ = new BehaviorSubject<number | null>(null);
 
   total$: Observable<number> = combineLatest([
     this.reservaSeleccionadaIds$,
@@ -38,21 +38,20 @@ export class CompraComponent implements OnInit {
 
       reservaIds.forEach(id => {
         const r = this.reservas.find(res => res.id === id);
-        if (r) {
-          subtotal += r.asientos_etiquetas.length * 100;
-        }
+        if (r) subtotal += r.asientos_etiquetas.length * 100;
       });
 
       if (promoId) {
         const promo = this.promociones.find(p => p.id === promoId);
-        if (promo && promo.activo) {
+        if (promo?.activo) {
           if (promo.tipo === TipoPromocion.PORCENTAJE) {
             subtotal *= (1 - promo.valor / 100);
-          } else if (promo.tipo === TipoPromocion.MONTO) {
+          } else {
             subtotal -= promo.valor;
           }
         }
       }
+
       return Math.max(0, subtotal);
     })
   );
@@ -72,7 +71,7 @@ export class CompraComponent implements OnInit {
     const input = event.target;
     let value = input.value.replace(/\D/g, '');
     value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-    input.value = value;
+    input.value = value.trim();
   }
 
   formatoFecha(event: any) {
@@ -86,33 +85,21 @@ export class CompraComponent implements OnInit {
 
   cargarDatosLocalStorage() {
     const reservasRaw = localStorage.getItem('reservas');
-    this.reservas = reservasRaw
-      ? JSON.parse(reservasRaw).map((r: any) => ({
-          ...r,
-          created_at: new Date(r.created_at),
-          expires_at: new Date(r.expires_at),
-        }))
-      : [];
+    this.reservas = reservasRaw ? JSON.parse(reservasRaw) : [];
 
     const promocionesRaw = localStorage.getItem('promociones');
-    this.promociones = promocionesRaw
-      ? JSON.parse(promocionesRaw).map((p: any) => ({
-          ...p,
-          fecha_inicio: new Date(p.fecha_inicio),
-          fecha_fin: new Date(p.fecha_fin),
-          created_at: new Date(p.created_at),
-          updated_at: new Date(p.updated_at),
-        }))
-      : [];
+    this.promociones = promocionesRaw ? JSON.parse(promocionesRaw) : [];
   }
 
   onReservaChange(reserva: ReservaI, event: any) {
     let current = this.reservaSeleccionadaIds$.getValue();
+
     if (event.target.checked) {
       if (!current.includes(reserva.id)) current.push(reserva.id);
     } else {
       current = current.filter(id => id !== reserva.id);
     }
+
     this.reservaSeleccionadaIds$.next([...current]);
     this.reservaSeleccionadaIds = [...current];
   }
@@ -128,138 +115,26 @@ export class CompraComponent implements OnInit {
   }
 
   private initReservas() {
-    const reservasKey = 'reservas';
-    if (!localStorage.getItem(reservasKey)) {
-      const reservasSeed: ReservaI[] = [
-        {
-          id: 1, funcion_id: 101, asientos_etiquetas: ['A1', 'A2'],
-          created_at: new Date(), expires_at: new Date(Date.now() + 1000 * 60 * 15),
-          status: EstadoReserva.ACTIVA,
-        },
-        {
-          id: 2, funcion_id: 102, asientos_etiquetas: ['B3', 'B4', 'B5'],
-          created_at: new Date(), expires_at: new Date(Date.now() + 1000 * 60 * 20),
-          status: EstadoReserva.CONFIRMADA,
-        },
-      ];
-      localStorage.setItem(reservasKey, JSON.stringify(reservasSeed));
+    if (!localStorage.getItem('reservas')) {
+      localStorage.setItem('reservas', JSON.stringify([]));
     }
   }
 
   private initPromociones() {
-    const promocionesKey = 'promociones';
-    if (!localStorage.getItem(promocionesKey)) {
-      const promocionesSeed: PromocionI[] = [
-        {
-          id: 1, codigo: 'PROMO10', nombre: 'Descuento 10%', descripcion: '10% OFF en todo',
-          tipo: TipoPromocion.PORCENTAJE, valor: 10, aplicable_a: AplicableA.COMPRA,
-          fecha_inicio: new Date(), fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-          activo: true, created_at: new Date(), updated_at: new Date(),
-        },
-        {
-          id: 2, codigo: 'VIP5', nombre: 'Descuento $5', descripcion: '$5 OFF VIP',
-          tipo: TipoPromocion.MONTO, valor: 5, aplicable_a: AplicableA.BOLETO,
-          fecha_inicio: new Date(), fecha_fin: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15),
-          activo: true, created_at: new Date(), updated_at: new Date(),
-        },
-      ];
-      localStorage.setItem(promocionesKey, JSON.stringify(promocionesSeed));
+    if (!localStorage.getItem('promociones')) {
+      localStorage.setItem('promociones', JSON.stringify([]));
     }
   }
 
   async confirmarCompra() {
-    const usuarioActual = this.auth.getCurrentUser();
-    if (!usuarioActual) {
-      alert('No se encontró el usuario logueado.');
+    if (this.reservaSeleccionadaIds.length === 0) {
+      alert('Selecciona al menos una reserva');
       return;
     }
 
-    const usuarioId = usuarioActual.id;
-
-    if (usuarioActual.role !== 'admin') {
-      const usuarioPerfil = await this.usuarioService.getById(usuarioId);
-      if (!usuarioPerfil) {
-        alert('Usuario no encontrado en la base de datos.');
-        return;
-      }
-    }
-
-    if (this.reservaSeleccionadaIds$.getValue().length === 0) {
-      alert('Debe seleccionar al menos una reserva para continuar.');
-      return;
-    }
-
-    let subtotal = 0;
-    const boletos: BoletoI[] = [];
-    const boletosIds: number[] = [];
-
-    this.reservaSeleccionadaIds$.getValue().forEach(reservaId => {
-      const reserva = this.reservas.find(r => r.id === reservaId);
-      if (!reserva) return;
-
-      const precioPorAsiento = 100;
-      subtotal += precioPorAsiento * reserva.asientos_etiquetas.length;
-
-      const boletoId = Date.now() + Math.floor(Math.random() * 10000);
-
-      const boleto: BoletoI = {
-        id: boletoId,
-        compra_id: 0,
-        funcion_id: reserva.funcion_id,
-        asiento_id: reserva.asientos_etiquetas.map(a => parseInt(a.replace(/\D/g, '')) || 0),
-        usuario_id: usuarioId,
-        precio: precioPorAsiento,
-        promocion_id: this.promoSeleccionadaId$.getValue() ? [this.promoSeleccionadaId$.getValue()!] : [],
-        estado: EstadoBoleto.EMITIDO,
-        fecha_emision: new Date()
-      };
-
-      boletos.push(boleto);
-      boletosIds.push(boletoId);
-    });
-
-    const impuestos = subtotal * 0.19;
-    let total = subtotal + impuestos;
-
-    const promoId = this.promoSeleccionadaId$.getValue();
-    const promocionesAplicadas: number[] = [];
-
-    if (promoId) {
-      const promo = this.promociones.find(p => p.id === promoId);
-      if (promo && promo.activo) {
-        promocionesAplicadas.push(promo.id);
-        if (promo.tipo === TipoPromocion.PORCENTAJE) total *= (1 - promo.valor / 100);
-        else if (promo.tipo === TipoPromocion.MONTO) total -= promo.valor;
-      }
-    }
-
-    const compraId = Date.now();
-    const compra: CompraI = {
-      id: compraId,
-      reserva: this.reservaSeleccionadaIds$.getValue(),
-      subtotal,
-      impuestos,
-      total,
-      promociones_aplicadas: promocionesAplicadas,
-      estado: EstadoCompra.COMPLETADA,
-      created_at: new Date(),
-      boletos: boletosIds
-    };
-
-    boletos.forEach(b => b.compra_id = compraId);
-
-    const usuario = await this.usuarioService.getById(usuarioId);
-    if (usuario) {
-      if (!usuario.historial) usuario.historial = [];
-      usuario.historial.push(compraId);
-      await this.usuarioService.update(usuario);
-    }
-
-    alert(`¡Compra confirmada!\nTotal final: $${total.toFixed(2)}`);
-
+    alert('¡Compra confirmada! 🎉');
+    this.reservaSeleccionadaIds = [];
     this.reservaSeleccionadaIds$.next([]);
     this.promoSeleccionadaId$.next(null);
-    this.reservaSeleccionadaIds = [];
-    this.promoSeleccionadaId = undefined;
   }
 }

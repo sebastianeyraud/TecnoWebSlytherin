@@ -166,3 +166,24 @@ span { color: #2ecc71; font-weight: bold; }
   background: #b00020;
 }
 
+.btn-comprar {
+  margin-top: 25px;
+  padding: 14px 35px;
+  background-color: #2ecc71;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-comprar:hover {
+  transform: scale(1.05);
+}
+
+.btn-comprar:disabled {
+  background: #777;
+  cursor: not-allowed;
+}
