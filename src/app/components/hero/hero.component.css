@@ -12,7 +12,7 @@
   height: 120%;
   transform: translate(-50%, -50%);
   z-index: 0;
-  pointer-events: none; /* evita clicks */
+  pointer-events: none;
 }
 
 .hero-overlay {
@@ -24,4 +24,44 @@
     rgba(0,0,0,0.7),
     rgba(0,0,0,0.3)
   );
+}
+
+.hero-arrows {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 2;
+}
+
+.hero-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5); 
+  color: #fff;
+  font-size: 24px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+}
+
+.hero-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.8); 
+  transform: scale(1.2); 
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5); 
+}
+
+.hero-arrow-prev {
+  transform: rotate(180deg); 
+}
+
+.hero-arrow-next {
+  transform: rotate(0deg); 
 }
