@@ -1,0 +1,45 @@
+<div class="modal-backdrop">
+  <div class="modal-card">
+
+    <h2>{{ promocion ? 'Editar promoción' : 'Nueva promoción' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <label>Código</label>
+      <input type="text" formControlName="codigo">
+
+      <label>Nombre</label>
+      <input type="text" formControlName="nombre">
+
+      <label>Descripción</label>
+      <textarea formControlName="descripcion"></textarea>
+
+      <label>Tipo</label>
+      <select formControlName="tipo">
+        <option value="PORCENTAJE">Porcentaje</option>
+        <option value="MONTO">Monto</option>
+      </select>
+
+      <label>Valor</label>
+      <input type="number" formControlName="valor">
+      <label>
+        <input type="checkbox" formControlName="activo">
+        Activa
+      </label>
+
+      <label>Aplicable a</label>
+        <select formControlName="aplicable_a">
+        <option value="COMPRA">Compra normal</option>
+        <option value="MEMBRESIA">Solo membresía</option>
+        </select>
+
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-pill">Guardar</button>
+        <button type="button" class="btn-pill light" (click)="close.emit()">Cancelar</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
