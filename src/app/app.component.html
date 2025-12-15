@@ -1,6 +1,11 @@
+<div *ngIf="!dbLista; else appContent" class="loading-screen">
+  <p>Cargando datos...</p>
+</div>
 
-<app-header></app-header>
-
-<router-outlet></router-outlet>
-
-<app-footer></app-footer>
+<ng-template #appContent>
+  <app-header></app-header>
+  <div class="content-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+  <app-footer></app-footer>
+</ng-template>

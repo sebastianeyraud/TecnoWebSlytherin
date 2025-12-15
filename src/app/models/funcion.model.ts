@@ -1,9 +1,6 @@
-import { Pelicula } from "./pelicula.model";
-import { Sala } from "./sala.model";
 
 export class Funcion {
-  private pelicula: Pelicula;
-  private sala: Sala;
+  private sala: number;
   private start_time: Date;
   private end_time: Date;
   private formato: string;
@@ -13,15 +10,13 @@ export class Funcion {
   private updated_at: Date;
 
   constructor(
-    pelicula: Pelicula,
-    sala: Sala,
+    sala: number,
     start_time: Date,
     end_time: Date,
     formato: string,
     precio_base: number,
     disponible: boolean = true
   ) {
-    this.pelicula = pelicula;
     this.sala = sala;
     this.start_time = start_time;
     this.end_time = end_time;
@@ -31,11 +26,9 @@ export class Funcion {
     this.created_at = new Date();
     this.updated_at = new Date();
 
-    pelicula.addFuncion(this);
   }
 
   // ---------- GETTERS (1 línea) ----------
-  getPelicula = () => this.pelicula;
   getSala = () => this.sala;
   getStartTime = () => this.start_time;
   getEndTime = () => this.end_time;
@@ -46,8 +39,7 @@ export class Funcion {
   getUpdatedAt = () => this.updated_at;
 
   // ---------- SETTERS (1 línea) ----------
-  setPelicula = (v: Pelicula) => this.pelicula = v;
-  setSala = (v: Sala) => this.sala = v;
+  setSala = (v: number) => this.sala = v;
   setStartTime = (v: Date) => { this.start_time = v; this.touch(); };
   setEndTime = (v: Date) => { this.end_time = v; this.touch(); };
   setFormato = (v: string) => { this.formato = v; this.touch(); };

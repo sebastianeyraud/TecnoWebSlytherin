@@ -1,0 +1,61 @@
+<div class="layout-container">
+    
+    <main class="main-column">
+        <div class="section-header">
+            <h2 class="title-badge">Promociones</h2>
+            <div class="line-decorator"></div>
+        </div>
+        
+        <div class="promo-list">
+            <article class="promo-card" *ngFor="let promo of promociones">
+                <div class="img-wrapper">
+                    <img [src]="promo.imageUrl" [alt]="promo.title">
+                </div>
+                <div class="card-content">
+                    <h3>
+                        {{ promo.title }} 
+                        <br *ngIf="promo.subtitle">
+                        <span class="subtitle" *ngIf="promo.subtitle">{{ promo.subtitle }}</span>
+                    </h3>
+                    <p>{{ promo.description }}</p>
+                    <span class="price-tag" *ngIf="promo.price">{{ promo.price }}</span>
+                    <button class="btn-pill">{{ promo.buttonText }}</button>
+                </div>
+            </article>
+        </div>
+    </main>
+  
+    <aside class="sidebar-column">
+        <div class="section-header sidebar-header">
+            <h2 class="sidebar-title">Con membresía</h2>
+            <div class="line-decorator gold"></div>
+        </div>
+  
+        <div class="membership-list">
+            <ng-container *ngFor="let item of membershipItems">
+                
+                <div class="member-card dark" *ngIf="item.type === 'dark'">
+                    <div class="card-text">
+                        <h3>{{ item.title }}</h3>
+                        <span class="gold-tag" *ngIf="item.tag">{{ item.tag }}</span>
+                        <p>{{ item.description }}</p>
+                        <button class="btn-pill light">{{ item.buttonText }}</button>
+                    </div>
+                    <img [src]="item.imageUrl" class="poster-img">
+                </div>
+  
+                <div class="member-card light" *ngIf="item.type === 'light'">
+                    <img [src]="item.imageUrl" class="product-img">
+                    <div class="card-text">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                        <span class="price-tag" *ngIf="item.price">{{ item.price }}</span>
+                        <button class="btn-pill">{{ item.buttonText }}</button>
+                    </div>
+                </div>
+  
+            </ng-container>
+        </div>
+    </aside>
+  
+</div>

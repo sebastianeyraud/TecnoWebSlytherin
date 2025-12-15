@@ -1,110 +1,157 @@
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
-import { Usuario } from '../models/usuario.model';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { User } from '../models/interfaces/user';
+import { UsuarioI } from '../models/interfaces/usuario-i';
+import { IndexedDBService } from './indexed-db.service';
+import { Membresia } from '../models/membresia';
+
+const STORAGE_KEY = 'myapp_session';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly STORAGE_KEY = 'myapp_session';
-  private credenciales = new Map<string, string[]>([
-    ['user', ['user', 'usuario']],
-    ['admin', ['admin', 'admin']],
-  ]);
+  private loggedInSubject = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedInSubject.asObservable();
 
-  constructor() {}
+  constructor(private dbService: IndexedDBService, private router: Router) {
+    const hasSession = !!localStorage.getItem(STORAGE_KEY);
+    this.loggedInSubject.next(hasSession);
+  }
 
-  login(user: User): boolean {
-    const datos = this.credenciales.get(user.email);
-    if (!datos) {
-      console.log('No registrado');
-      return false;
-    }
+  async login(email: string, password: string): Promise<boolean> {
+    await this.dbService.dbReady;
+    const store = this.dbService.getStore('users');
 
-    const [passwordStored, role] = datos;
-    if (user.password !== passwordStored) {
-      console.log('Contraseña incorrecta');
-      return false;
-    }
+    return new Promise(resolve => {
+      const index = store.index('email');
+      const req = index.get(email);
 
-    if (role === 'admin') {
-      const payload = { email: user.email, role };
-      const token = btoa(JSON.stringify(payload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
-    } else {
-      let safePayload: any = null;
-      if (user instanceof Usuario && typeof (user as any).toJSON === 'function') {
-        safePayload = (user as any).toJSON();
-      } else {
-        safePayload = {
-          nombre: (user as any).nombre ?? user.email.split('@')[0],
-          email: user.email,
-          rol: (user as any).rol ?? 'usuario',
+      req.onsuccess = (event: any) => {
+        const user: User = event.target.result;
+
+        if (!user || user.password !== password) {
+          resolve(false);
+          return;
+        }
+
+        const payload = { id: user.id, email: user.email, role: user.rol };
+        localStorage.setItem(STORAGE_KEY, btoa(JSON.stringify(payload)));
+
+        this.loggedInSubject.next(true);
+        resolve(true);
+      };
+
+      req.onerror = () => resolve(false);
+    });
+  }
+
+  async registrar(userData: { nombre: string; email: string; password: string; rol: 'usuario' | 'admin' }): Promise<User> {
+    await this.dbService.dbReady;
+
+    // 1️⃣ Crear User
+    const nuevoUser: User = {
+      id: Date.now(),
+      nombre: userData.nombre,
+      email: userData.email,
+      password: userData.password,
+      rol: userData.rol
+    };
+
+    const userStore = this.dbService.getStore('users', 'readwrite');
+
+    // Verificar si ya existe el email
+    const existing = await new Promise((resolve, reject) => {
+      const index = userStore.index('email');
+      const req = index.get(nuevoUser.email);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+
+    if (existing) throw new Error('Usuario ya registrado');
+
+    // Guardar User
+    await new Promise((resolve, reject) => {
+      const req = userStore.add(nuevoUser);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+
+    // 2️⃣ Crear perfil vacío según rol con manejo de errores
+    const storePerfil = this.dbService.getStore('usuarios_perfil', 'readwrite');
+
+    try {
+      if (nuevoUser.rol === 'usuario') {
+        const nuevoUsuarioI: UsuarioI = {
+          id: nuevoUser.id,
+          apellido: '',
+          telefono: '',
+          membresia: Membresia.NONE,
+          created_at: new Date(),
+          historial: [],
+          notificaciones: [],
+          p_favoritas: []
         };
+
+        await new Promise((resolve, reject) => {
+          const req = storePerfil.add(nuevoUsuarioI);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+
+      } else if (nuevoUser.rol === 'admin') {
+        const nuevoAdmin = { id: nuevoUser.id };
+        await new Promise((resolve, reject) => {
+          const req = storePerfil.add(nuevoAdmin);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
       }
-
-      const token = btoa(JSON.stringify(safePayload));
-      localStorage.setItem(this.STORAGE_KEY, token);
-      return true;
+    } catch (perfilError) {
+      // Si falla la creación del perfil, eliminamos el User para no dejarlo huérfano
+      await new Promise((resolve, reject) => {
+        const req = userStore.delete(nuevoUser.id);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => reject(req.error);
+      });
+      throw new Error('Error creando el perfil del usuario');
     }
 
-    return false;
-  }
-
-  registrar(user: User): void {
-    if (this.credenciales.has(user.email)) {
-      throw new Error('Usuario ya registrado');
-    }
-
-    // Guardado en credenciales "fake"
-    this.credenciales.set(user.email, [user.password, user.rol || 'user']);
-
-    // -----------------------------
-    // GUARDAR EN LA LISTA DE USUARIOS
-    // -----------------------------
-    const raw = localStorage.getItem('usuarios');
-    const arr = raw ? JSON.parse(raw) : [];
-
-    // guardar en formato JSON, no como clase
-    arr.push((user as any).toJSON ? (user as any).toJSON() : user);
-
-    localStorage.setItem('usuarios', JSON.stringify(arr));
-  }
-
-  getAllUsuarios(): any[] {
-    const raw = localStorage.getItem('usuarios');
-    return raw ? JSON.parse(raw) : [];
+    return nuevoUser;
   }
 
   logout(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+    this.loggedInSubject.next(false);
+    this.router.navigate(['/login']);
   }
 
   isLogged(): boolean {
-    return !!localStorage.getItem(this.STORAGE_KEY);
+    return this.loggedInSubject.value;
+  }
+
+  isLoggedIn(): boolean {
+    return this.loggedInSubject.value;
   }
 
   isAdmin(): boolean {
-    const token = localStorage.getItem(this.STORAGE_KEY);
+    const token = localStorage.getItem(STORAGE_KEY);
     if (!token) return false;
     try {
-      const decoded = atob(token);
-      const obj = JSON.parse(decoded) as { email?: string; role?: string };
-      return obj.role === 'admin';
-    } catch (e) {
-      console.warn('Token inválido', e);
+      const decoded = JSON.parse(atob(token));
+      return decoded.role === 'admin';
+    } catch {
       return false;
     }
   }
 
-  //Debería ir acá?
-  getCurrentUser(): any | null {
-    const token = localStorage.getItem(this.STORAGE_KEY);
+  getCurrentUser(): { id: number; email: string; role: string } | null {
+    const token = localStorage.getItem(STORAGE_KEY);
     if (!token) return null;
     try {
-      const decoded = atob(token);
-      return JSON.parse(decoded);
+      const decoded = JSON.parse(atob(token));
+      return { id: decoded.id, email: decoded.email, role: decoded.role };
     } catch {
       return null;
     }

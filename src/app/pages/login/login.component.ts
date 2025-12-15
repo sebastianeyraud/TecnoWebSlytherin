@@ -1,42 +1,51 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { User } from 'src/app/models/user';
-import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  formularioLogin: FormGroup;
+  loginError = false;
 
   constructor(
+    private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
-  ) {}
+    // private authService: AuthService, // si ya lo tienes, descomenta y úsalo abajo
+  ) {
+    this.formularioLogin = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
+    });
 
-  public formularioLogin: FormGroup = new
-  FormGroup({
-    email: new FormControl(null),
-    password: new FormControl(null)
-  })
+    // opcional: al escribir, oculta el mensaje de error
+    this.formularioLogin.valueChanges.subscribe(() => {
+      this.loginError = false;
+    });
+  }
 
-  public iniciarSesion():void{
+  iniciarSesion(): void {
     if (this.formularioLogin.invalid) {
-      console.log('Está malo el formulario')
       this.formularioLogin.markAllAsTouched();
       return;
     }
 
-    const usuario = this.formularioLogin.value as User;
-    const ok = this.authService.login(usuario);
+    const { email, password } = this.formularioLogin.value;
 
-    if (ok) {
-      this.router.navigateByUrl('');
+    // Si tienes AuthService:
+    // this.authService.login(email, password).subscribe({
+    //   next: () => this.router.navigate(['/']),
+    //   error: () => (this.loginError = true),
+    // });
+
+    // Placeholder mínimo si aún no conectas backend:
+    if (email && password) {
+      this.router.navigate(['/']);
     } else {
-      alert('Credenciales incorrectas');
+      this.loginError = true;
     }
   }
-
 }

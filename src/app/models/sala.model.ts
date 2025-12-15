@@ -1,14 +1,13 @@
-import { Cine } from "./cine.model";
 
 export class Sala {
-  private cine: Cine;
+  private cine: number;
   private nombre: string;
   private tipo?: string;
   private capacidad: number;
   private plano_url?: string;
 
   constructor(
-    cine: Cine,
+    cine: number,
     nombre: string,
     capacidad: number,
     tipo?: string,
@@ -29,7 +28,7 @@ export class Sala {
   getPlanoUrl = () => this.plano_url;
 
   // -------- SETTERS (una línea) --------
-  setCine = (c: Cine) => this.cine = c;
+  setCine = (c: number) => this.cine = c;
   setNombre = (n: string) => this.nombre = n;
   setTipo = (t?: string) => this.tipo = t;
   setCapacidad = (c: number) => this.capacidad = c;

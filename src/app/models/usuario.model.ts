@@ -1,33 +1,33 @@
-import { User } from "./user";
+import { User } from "./interfaces/user";
 import { Membresia } from "./membresia";
-import { Compra } from "./compra.model";
-import { Alerta } from "./alerta.model";
 
 export class Usuario implements User{
     nombre: string;
     email: string;
     password: string;
     rol: "usuario" | "admin";
+    id: number;
 
     private apellido?: string
     private telefono?: string
     private membresia: Membresia
     private created_at: Date
-    private historial: Compra[]
-    private notificaciones: Alerta[]
+    private historial: number[]
+    private notificaciones: number[]
 
-    constructor(email:string,password:string){
+    constructor(email:string,password:string, id:number, nombre?: string){
         this.rol = "usuario"
-        this.nombre = email.split('@')[0]
+        this.nombre = nombre ?? email.split('@')[0]
         this.email = email
         this.password = password
         this.membresia = Membresia.NONE
 
         this.created_at = new Date();
-
         this.historial = [];
         this.notificaciones = [];
+        this.id=id;
     }
+
 
     toJSON() {
         return {
@@ -45,7 +45,7 @@ export class Usuario implements User{
     }
 
     static fromJSON(obj: any): Usuario {
-        const u = new Usuario(obj.email, ""); // password NO se guarda
+        const u = new Usuario(obj.email, "",obj.id); // password NO se guarda
 
         u.nombre = obj.nombre;
         u.rol = obj.rol || "usuario";
@@ -76,8 +76,8 @@ export class Usuario implements User{
 
     public getCreatedAt(): Date { return this.created_at; }
 
-    public getHistorial(): Compra[] { return this.historial; }
-    public getNotificaciones(): Alerta[] { return this.notificaciones; }
+    public getHistorial(): number[] { return this.historial; }
+    public getNotificaciones(): number[] { return this.notificaciones; }
 
     // ----------- SETTERS -----------
 
@@ -90,11 +90,11 @@ export class Usuario implements User{
     public setMembresia(m: Membresia): void { this.membresia = m; }
 
     // -------------------------------------------------
-    public addCompra(c: Compra): void {
+    public addCompra(c: number): void {
         this.historial.push(c);
     }
 
-    public addAlerta(a: Alerta): void {
+    public addAlerta(a: number): void {
         this.notificaciones.push(a);
     }
 }

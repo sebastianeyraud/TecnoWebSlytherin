@@ -1,22 +1,39 @@
 <header class="topbar">
   <div class="topbar-left">
     <div class="logo">
-  <img src="/assets/logoamc.png" alt="AMC Theatres" />
-  </div>
+      <img src="/assets/logoamc.png" alt="AMC Theatres" />
+    </div>
 
     <nav class="main-nav">
-      <a href="#">Ve una película</a>
-      <a href="#">Promociones</a>
+      <a routerLink="/cartelera">Cartelera</a>
+      <a routerLink="/promociones">Promociones</a>
     </nav>
   </div>
 
   <div class="topbar-right">
+    <ng-container *ngIf="(currentUser$ | async) as user">
+      <button 
+        class="header-btn"
+        [routerLink]="user?.membresia === 'NONE' ? '/membresia' : null"
+        [attr.disabled]="user?.membresia !== 'NONE' ? true : null"
+      >
+        Membresía: {{ user?.membresia || 'NINGUNA' }}
+      </button>
+    </ng-container>
 
-  <button class="header-btn">🛒</button>
+    <ng-container *ngIf="isLoggedIn$ | async; else notLoggedIn">
+      
+      <button class="header-btn" routerLink="/comprar">
+        Realizar Compra
+      </button>
 
-  <button class="header-btn" routerLink="/usuario">👤 Usuario</button>
+      <button class="header-btn" routerLink="/perfil">Perfil</button>
+      <button class="header-btn" (click)="onLogout()">Cerrar sesión</button>
+    </ng-container>
 
-  <button class="header-btn" routerLink="/membresia">Membresía X</button>
-
+    <ng-template #notLoggedIn>
+      <button class="header-btn" routerLink="/login">👤 Iniciar sesión</button>
+      <button class="header-btn" routerLink="/registro">Crear cuenta</button>
+    </ng-template>
   </div>
 </header>

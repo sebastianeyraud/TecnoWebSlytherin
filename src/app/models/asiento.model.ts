@@ -1,9 +1,8 @@
 import { TipoAsiento } from "./tipo-asiento";
-import { Sala } from "./sala.model";
 
 export class Asiento {
   private disponible: boolean;
-  private sala: Sala;
+  private sala: number;
   private fila: string;
   private numero: number;
   private etiqueta?: string;
@@ -12,7 +11,7 @@ export class Asiento {
   private activo: boolean;
 
   constructor(
-    sala: Sala,
+    sala: number,
     fila: string,
     numero: number,
     tipo_asiento: TipoAsiento = TipoAsiento.ESTANDAR,
@@ -35,7 +34,7 @@ export class Asiento {
 
   // ------------ GETTERS ------------
 
-  public getSalaId(): Sala {return this.sala;}
+  public getSalaId(): number {return this.sala;}
   public getFila(): string {return this.fila;}
   public getNumero(): number {return this.numero;}
   public getEtiqueta(): string | undefined {return this.etiqueta;}

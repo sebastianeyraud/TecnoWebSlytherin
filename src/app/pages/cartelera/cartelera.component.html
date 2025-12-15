@@ -1,114 +1,150 @@
 <div class="cartelera-page">
 
-  <section class="hero">
-    <div class="hero-overlay">
-      <div class="hero-content">
-        <h1>Wicked</h1>
-        <p class="hero-subtitle">Musical, Fantasía, Drama · 162 minutos</p>
-        <p class="hero-text">
-          Un poquito de texto para complementar, sería como la descripción que puso el admin noma
-          Pensaba en que aquí se mostraran los anuncios de las nuevas cosas, y que tengan un límite
-          Tipo las 5 últimas nuevas cosas ya sean promoción o estrenos.
-        </p>
-        <div class="hero-cta">
-          <button class="btn-primary">Comprar tickets</button>
-          <p class="hero-date">13 de Noviembre de 2025</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-hero></app-hero>
+  <div *ngIf="auth.isAdmin()">
+    <h1>Admin view</h1>
+  </div>
 
   <main class="layout">
+
     <aside class="filters">
-  <div class="filter-group filter-search">
-    <div class="input-with-icon">
-      <span class="input-icon">🔍</span>
-      <input type="text" placeholder="Buscar" />
-    </div>
-  </div>
-
-  <div class="filter-divider"></div>
-
-  <div class="filter-group">
-    <label>Tiempo</label>
-    <input type="text" placeholder="Ej: 2h 30m" />
-  </div>
-
-  <div class="filter-group">
-    <label>Rango de edad</label>
-    <select>
-      <option>Todas las edades</option>
-      <option>7+</option>
-      <option>14+</option>
-      <option>18+</option>
-    </select>
-  </div>
-
-  <div class="filter-group">
-    <label>Categoría</label>
-    <input type="text" placeholder="Buscar categoría" />
-  </div>
-
-  <div class="filter-group">
-    <label>Casting</label>
-    <input type="text" placeholder="Buscar actor" />
-  </div>
-
-
-  <div class="filter-group">
-    <label>Rango precio</label>
-
-    <div class="price-row">
-      <div class="price-input">
-        <span class="price-prefix">$</span>
-        <input type="number" placeholder="0000" />
+      <div class="filter-group filter-search">
+        <div class="input-with-icon">
+          <span class="input-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Buscar"
+            [(ngModel)]="filtro.titulo"
+            (input)="aplicarFiltros()"
+          />
+        </div>
       </div>
 
-      <span class="range-separator">a</span>
+      <div class="filter-divider"></div>
 
-      <div class="price-input">
-        <span class="price-prefix">$</span>
-        <input type="number" placeholder="00000" />
+      <div class="filter-group">
+        <label>Tiempo</label>
+        <input
+          type="text"
+          placeholder="Ej: 2h 30m"
+          [(ngModel)]="filtro.tiempo"
+          (input)="aplicarFiltros()"
+        />
       </div>
-    </div>
-  </div>
 
-  <div class="filter-divider"></div>
+      <div class="filter-group">
+        <label>Rango de edad</label>
+        <select
+          [(ngModel)]="filtro.edad"
+          (change)="aplicarFiltros()"
+        >
+          <option value="">Todas las edades</option>
+          <option>7+</option>
+          <option>14+</option>
+          <option>18+</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Categoria</label>
+        <input
+          type="text"
+          placeholder="Ej: Musical"
+          [(ngModel)]="filtro.categoria"
+          (input)="aplicarFiltros()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Casting</label>
+        <input
+          type="text"
+          placeholder="Ej: Cynthia Erivo"
+          [(ngModel)]="filtro.casting"
+          (input)="aplicarFiltros()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Rango precio</label>
+        <div class="price-row">
+          <div class="price-input">
+            <span class="price-prefix">$</span>
+            <input
+              type="number"
+              placeholder="00000"
+              [(ngModel)]="filtro.precioMin"
+              (input)="aplicarFiltros()"
+            />
+          </div>
+
+          <span class="range-separator">a</span>
+
+          <div class="price-input">
+            <span class="price-prefix">$</span>
+            <input
+              type="number"
+              placeholder="00000"
+              [(ngModel)]="filtro.precioMax"
+              (input)="aplicarFiltros()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button *ngIf="auth.isAdmin()" (click)="showForm = true">Agregar Película</button>
+
+      
+      <app-formulario-pelicula
+        [visible]="showForm"
+        (save)="onSavePelicula($event)"
+        (close)="showForm = false">
+      </app-formulario-pelicula>
+
+
+      <div class="filter-divider"></div>
 
     </aside>
 
     <section class="movie-detail">
-      <div class="movie-card">
+
+
+      <div class="movie-card" *ngFor="let peli of peliculasFiltradas">
+
+
         <div class="movie-poster">
-          <img src="/assets/wicked22.jpg" alt="Wicked" />
+          <img [src]="peli.poster_url" [alt]="peli.titulo" />
         </div>
 
         <div class="movie-info">
-          <h2>Wicked</h2>
+          <h2>{{ peli.titulo }}</h2>
+
           <p class="movie-meta">
-            Musical, Fantasía, Drama<br />
-            162 minutos · 2 hrs. 6 min.<br />
-            Todas las edades
+            {{ peli.genero }}<br />
+            {{ peli.duracion_min }} minutos<br />
+            {{ peli.clasificacion }}
           </p>
 
           <p class="movie-premiere">
-            Estreno (aun en duda xd)<br />
-            <span>13 de Noviembre de 2025</span>
+            Estreno<br />
+            <span>{{ peli.created_at | date }}</span>
           </p>
         </div>
 
         <div class="movie-description">
-          <p>
-            Adaptación cinematográfica de dos partes del musical de Broadway que relata la historia
-            no contada de las brujas de Oz, Elphaba y Glinda, antes de los eventos de El Mago de Oz.
-            La película se enfoca en su improbable amistad en la Universidad de Shiz, explorando temas
-            como la discriminación y el poder, y el momento en que sus vidas se separan y se convierten
-            en la Malvada Bruja del Oeste y Glinda la Buena, respectivamente.
-          </p>
+          <p>{{ peli.sinopsis }}</p>
 
-          <button class="btn-secondary">Añadir al carrito</button>
+          <button class="btn-secondary" [routerLink]="['/pelicula', peli.titulo]">
+            Ver
+          </button>
+          <div *ngIf="auth.isAdmin()" class="admin-buttons">
+            <button (click)="eliminarPelicula(peli)">Eliminar película</button>
+          </div>
         </div>
+
       </div>
+
     </section>
   </main>
+
 </div>

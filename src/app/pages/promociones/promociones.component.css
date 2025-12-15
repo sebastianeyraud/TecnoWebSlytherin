@@ -1,0 +1,231 @@
+/* --- LAYOUT GENERAL --- */
+.layout-container {
+    display: grid;
+    grid-template-columns: 65% 35%; /* Proporción de la imagen */
+    min-height: 80vh;
+    font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+    background-color: #fff;
+    color: #333;
+    max-width: 1400px; /* Evita que se estire demasiado en pantallas gigantes */
+    margin: 0 auto;
+}
+
+/* --- COLUMNA IZQUIERDA (Promociones) --- */
+.main-column {
+    padding: 40px 50px;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* Cabeceras de Sección (El estilo de la barra) */
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.title-badge {
+    background-color: #003640; /* Verde oscuro AMC */
+    color: #fff;
+    padding: 8px 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.line-decorator {
+    flex-grow: 1;
+    height: 2px;
+    background-color: #003640;
+    margin-left: 15px;
+    opacity: 0.8;
+}
+
+/* Tarjetas de Promoción */
+.promo-card {
+    display: flex;
+    gap: 25px;
+    padding: 35px 0;
+    border-bottom: 1px solid #dcdcdc;
+    transition: background-color 0.2s;
+}
+
+.promo-card:hover {
+    background-color: #fafafa; /* Efecto sutil al pasar el mouse */
+}
+
+.promo-card:last-child {
+    border-bottom: none;
+}
+
+.img-wrapper img {
+    width: 280px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.card-content h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+    color: #1a1a1a;
+}
+
+.card-content .subtitle {
+    font-weight: 300;
+    font-size: 1.3rem;
+    display: block;
+    margin-top: 4px;
+}
+
+.card-content p {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    max-width: 90%;
+}
+
+.price-tag {
+    color: #9e1e4c; /* Rojo vino AMC */
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+/* Botones Estilo "Pill" */
+.btn-pill {
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-pill:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- COLUMNA DERECHA (Sidebar) --- */
+.sidebar-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header del Sidebar (Diferente estilo) */
+.sidebar-header {
+    background-color: #1a161f; /* Fondo oscuro superior */
+    padding: 30px 30px 10px 30px; /* Ajuste para que pegue con la tarjeta */
+    margin-bottom: 0;
+}
+
+.sidebar-title {
+    color: #c4a787; /* Dorado/Beige */
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    background: transparent;
+}
+
+.line-decorator.gold {
+    background-color: #c4a787;
+    height: 1px;
+    opacity: 0.4;
+}
+
+.membership-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Tarjeta Oscura */
+.member-card.dark {
+    background-color: #1a161f; /* Oscuro */
+    color: white;
+    padding: 10px 30px 40px 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.member-card.dark h3 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.gold-tag {
+    color: #c4a787;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.member-card.dark p {
+    color: #ccc;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.poster-img {
+    width: 110px;
+    height: 160px;
+    object-fit: cover;
+    border: 2px solid #c4a787; /* Borde dorado */
+}
+
+/* Tarjeta Clara */
+.member-card.light {
+    background-color: #e6dcec; /* Lavanda suave */
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 40px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.member-card.light .product-img {
+    width: 140px;
+    transform: rotate(-5deg); /* Pequeña rotación como en la imagen */
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
+}
+
+.member-card.light h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+/* Ajustes Responsive básicos */
+@media (max-width: 900px) {
+    .layout-container {
+        grid-template-columns: 1fr; /* Una sola columna en tablets/móviles */
+    }
+    .main-column {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+}

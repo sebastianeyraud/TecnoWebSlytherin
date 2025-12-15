@@ -1,0 +1,80 @@
+<app-hero></app-hero>
+
+<div class="main-container">
+  <div class="columna promo-col">
+    <h2>Promociones</h2>
+    
+    <div class="scroll-box">
+      <div class="card" 
+           *ngFor="let promo of promociones"
+           [class.seleccionada]="(promoSeleccionadaId$ | async) === promo.id"
+           (click)="onPromoChange(promo.id)">
+        
+        <div class="card-header">
+          <h3>{{ promo.nombre }}</h3>
+          <span class="badge" *ngIf="(promoSeleccionadaId$ | async) === promo.id">ACTIVA</span>
+        </div>
+        
+        <p class="desc">{{ promo.descripcion }}</p>
+        <small class="codigo">CÓDIGO: {{ promo.codigo }}</small>
+        
+        <button class="btn-secundario">
+          {{ (promoSeleccionadaId$ | async) === promo.id ? 'Quitar' : 'Aplicar' }}
+        </button>
+      </div>
+
+      <p *ngIf="promociones.length === 0" class="empty-msg">No hay promociones disponibles.</p>
+    </div>
+  </div>
+
+  <div class="columna reservas-col">
+    <h2>Tus Reservas</h2>
+    <p class="instruccion">Selecciona para pagar:</p>
+    
+    <div class="scroll-box">
+      <div class="card reserva-card" *ngFor="let reserva of reservas">
+        <div class="reserva-row">
+          <input type="checkbox" 
+                 class="check-aesthetic"
+                 [checked]="reservaSeleccionadaIds.includes(reserva.id)"
+                 (change)="onReservaChange(reserva, $event)">
+          
+          <div class="reserva-info">
+            <strong>Función ID: {{ reserva.funcion_id }}</strong>
+            <p>Asientos: {{ reserva.asientos_etiquetas.join(', ') }}</p>
+            <small>Expira: {{ reserva.expires_at | date:'shortTime' }}</small>
+          </div>
+        </div>
+      </div>
+
+      <p *ngIf="reservas.length === 0" class="empty-msg">No tienes reservas pendientes.</p>
+    </div>
+  </div>
+
+  <div class="columna compra-col">
+    <h2>Finalizar Compra</h2>
+    
+    <div class="total-section">
+      <h3>Total a pagar</h3>
+      <span class="precio">{{ total$ | async | currency:'USD':'symbol':'1.0-0' }}</span>
+    </div>
+
+    <form class="form-pago">
+      <label>Titular de la tarjeta</label>
+      <input type="text" placeholder="Ej: Nombres y Apellidos">
+      
+      <label>Número de tarjeta</label>
+      <input type="text" placeholder="0000 0000 0000 0000">
+      
+      <div class="form-row">
+        <div><label>Expira</label><input type="text" placeholder="MM/AA"></div>
+        <div><label>CVV</label><input type="text" placeholder="123"></div>
+      </div>
+      
+      <button type="button" class="btn-pagar" (click)="confirmarCompra()">
+        CONFIRMAR PAGO
+      </button>
+    </form>
+  </div>
+
+</div>
