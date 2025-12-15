@@ -12,6 +12,7 @@ import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelic
 import { AsientosComponent } from './pages/asientos/asientos.component';
 import { CompraComponent } from './pages/compra/compra.component';
 import { MembresiaComponent } from './components/membresia/membresia.component';
+import { PromocionesComponent } from './pages/promociones/promociones.component';
 
 //Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -51,6 +52,7 @@ const routes: Routes = [
 
   },
   { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] },
+  { path: 'promociones', component: PromocionesComponent },
   {
     path: '**',
     redirectTo: '',
