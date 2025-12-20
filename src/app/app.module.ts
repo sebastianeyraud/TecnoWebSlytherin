@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { CarteleraComponent } from './pages/cartelera/cartelera.component';
-import { PrincipalComponent } from './pages/principal/principal.component'; // standalone
+//import { PrincipalComponent } from './pages/principal/principal.component'; // standalone
 
 import { LoginComponent } from './pages/login/login.component';
 import { RegistroComponent } from './pages/registro/registro.component';
@@ -41,7 +41,7 @@ import { MembresiaComponent } from './components/membresia/membresia.component';
     AdminComponent,
     DetallePeliculaComponent,
     AsientosComponent,
-    CompraComponent,
+    //CompraComponent,
     PromocionesComponent,
 
     HeroComponent,
