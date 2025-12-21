@@ -7,6 +7,9 @@
     <nav class="main-nav">
       <a routerLink="/cartelera">Cartelera</a>
       <a routerLink="/promociones">Promociones</a>
+
+      <a *ngIf="isAdmin()" routerLink="/admin/salas">Gestionar salas</a>
+      <a *ngIf="isAdmin()" routerLink="/admin/promociones">Gestionar promociones</a>
     </nav>
   </div>
 

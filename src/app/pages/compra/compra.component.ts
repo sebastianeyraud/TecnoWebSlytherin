@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,6 +16,8 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 
 @Component({
   selector: 'app-compra',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './compra.component.html',
   styleUrls: ['./compra.component.css']
 })

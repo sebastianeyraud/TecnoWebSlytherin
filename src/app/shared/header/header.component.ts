@@ -24,4 +24,9 @@ export class HeaderComponent implements OnInit {
     this.auth.logout();
     this.usuarioS.setCurrentUser(null); // actualizamos observable del servicio
   }
+
+  isAdmin(): boolean {
+  return this.auth.isAdmin();
+  }
 }
+

@@ -30,6 +30,16 @@ const routes: Routes = [
   },
   { path: 'registro', component: RegistroComponent },
   { path: 'perfil', component: PerfilComponent },
+    {
+    path: 'admin/salas',
+    component: AdminComponent,
+    canActivate: [ProteccionGuard, ProteccionAdminGuard]
+  },
+  {
+    path: 'admin/promociones',
+    component: AdminComponent,
+    canActivate: [ProteccionGuard, ProteccionAdminGuard]
+  },
   {
     path: 'admin',
     component: AdminComponent,
@@ -41,7 +51,8 @@ const routes: Routes = [
   },
   {
     path: 'comprar',
-    component: CompraComponent
+    loadComponent: () =>
+    import('./pages/compra/compra.component').then(m => m.CompraComponent)
   },
   {
     path: 'pelicula/:titulo',

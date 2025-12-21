@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { AuthService } from 'src/app/services/auth.service';
+import { UsuarioService } from 'src/app/services/usuario.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -14,7 +17,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    // private authService: AuthService, // si ya lo tienes, descomenta y úsalo abajo
+    private authService: AuthService,
+    private usuarioService: UsuarioService
   ) {
     this.formularioLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -27,24 +31,41 @@ export class LoginComponent {
     });
   }
 
-  iniciarSesion(): void {
+  async iniciarSesion(): Promise<void> {
     if (this.formularioLogin.invalid) {
       this.formularioLogin.markAllAsTouched();
       return;
     }
 
-    const { email, password } = this.formularioLogin.value;
+    const email = (this.formularioLogin.value.email ?? '').trim();
+    const password = this.formularioLogin.value.password ?? '';
 
-    // Si tienes AuthService:
-    // this.authService.login(email, password).subscribe({
-    //   next: () => this.router.navigate(['/']),
-    //   error: () => (this.loginError = true),
-    // });
+    try {
+      const ok = await this.authService.login(email, password);
 
-    // Placeholder mínimo si aún no conectas backend:
-    if (email && password) {
-      this.router.navigate(['/']);
-    } else {
+      if (!ok) {
+        this.loginError = true;
+        return;
+      }
+
+      const session = this.authService.getCurrentUser();
+      if (!session) {
+        this.loginError = true;
+        return;
+      }
+
+      // Si es usuario normal, carga perfil para el header/membresía
+      if (session.role === 'usuario') {
+        const perfil = await this.usuarioService.getById(session.id);
+        this.usuarioService.setCurrentUser(perfil ?? null);
+        this.router.navigate(['/perfil']); // o ['/'] si prefieres home
+        return;
+      }
+
+      // Si es admin, no hay perfil de UsuarioI (por tu seed)
+      this.usuarioService.setCurrentUser(null);
+      this.router.navigate(['/admin']);
+    } catch {
       this.loginError = true;
     }
   }
