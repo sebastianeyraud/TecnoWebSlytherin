@@ -29,7 +29,7 @@ const routes: Routes = [
     component: LoginComponent
   },
   { path: 'registro', component: RegistroComponent },
-  { path: 'perfil', component: PerfilComponent },
+  { path: 'perfil', component: PerfilComponent, canActivate: [AuthGuard] },
     {
     path: 'admin/salas',
     component: AdminComponent,
@@ -50,9 +50,9 @@ const routes: Routes = [
     component: CarteleraComponent
   },
   {
-    path: 'comprar',
-    loadComponent: () =>
-    import('./pages/compra/compra.component').then(m => m.CompraComponent)
+  path: 'comprar',
+  loadComponent: () => import('./pages/compra/compra.component').then(m => m.CompraComponent),
+  canActivate: [AuthGuard]
   },
   {
     path: 'pelicula/:titulo',

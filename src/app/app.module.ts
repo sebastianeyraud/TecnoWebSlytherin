@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,8 +26,6 @@ import { HeroComponent } from './components/hero/hero.component';
 import { PeliculaFormComponent } from './components/formulario-pelicula/formulario-pelicula.component';
 import { MembresiaComponent } from './components/membresia/membresia.component';
 
-// Si tienes UsuarioComponent y NO es standalone, descomenta y ajusta el path:
-// import { UsuarioComponent } from './pages/usuario/usuario.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +33,6 @@ import { MembresiaComponent } from './components/membresia/membresia.component';
     HeaderComponent,
     FooterComponent,
     HeroComponent,
-
 
     CarteleraComponent,
     LoginComponent,
@@ -46,7 +43,7 @@ import { MembresiaComponent } from './components/membresia/membresia.component';
     AsientosComponent,
     //CompraComponent,
     PromocionesComponent,
-    
+
     PeliculaFormComponent,
     MembresiaComponent,
     // UsuarioComponent,
@@ -54,6 +51,12 @@ import { MembresiaComponent } from './components/membresia/membresia.component';
   imports: [
     BrowserModule,
     CommonModule,
+
+    // ✅ pipes disponibles en templates (Angular 15+)
+    AsyncPipe,
+    DatePipe,
+    CurrencyPipe,
+
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
