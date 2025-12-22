@@ -1,0 +1,74 @@
+<div class="timer-container" *ngIf="!tiempoExpirado">
+  <p class="timer-text">Tiempo restante: {{ timer }} segundos</p>
+</div>
+
+<div class="timer-expired" *ngIf="tiempoExpirado">
+  ⏳ El tiempo expiró. Volviendo a la página anterior...
+</div>
+
+<div class="cine-layout">
+
+  <div class="info-pelicula">
+    <div class="info-pelicula">
+
+      <h2 class="titulo">{{ peliculaTitulo }}</h2>
+
+      <p class="detalle"><strong>Sala:</strong> {{ sala }}</p>
+
+      <p class="detalle"><strong>Horario:</strong> {{ hora }}</p>
+
+      <hr>
+    </div>
+  </div>
+
+  <div class="sala-wrapper">
+    
+    <ul class="showcase">
+      <li><div class="seat"></div><small>N/A</small></li>
+      <li><div class="seat selected"></div><small>Seleccionado</small></li>
+      <li><div class="seat occupied"></div><small>Ocupado</small></li>
+      <li><div class="seat disabled">♿</div><small>Discapacitados</small></li>
+    </ul>
+
+    <div class="container-sala">
+      <div class="screen"></div>
+
+      <div class="bloque-central">
+        <div class="columna-letras">
+          <div class="fila-letra" *ngFor="let fila of filas">
+            {{ fila.letra }}
+          </div>
+        </div>
+
+        <div class="area-asientos">
+          <div class="matriz">
+            <div class="fila-asientos" *ngFor="let fila of filas">
+              <div *ngFor="let asiento of fila.asientos"
+                   class="seat"
+                   [class.selected]="asiento.seleccionado"
+                   [class.occupied]="asiento.ocupado"
+                   [class.disabled]="asiento.discapacitado"
+                   (click)="seleccionarAsiento(asiento)"
+                   [title]="asiento.id">
+                    <span *ngIf="asiento.discapacitado" class="icono-silla">♿</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="fila-numeros">
+            <div class="numero-columna" *ngFor="let n of [].constructor(12); let i = index">
+              {{ i + 1 }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <p class="text">
+      Has seleccionado <span id="count">{{ cantidad }}</span> asientos. 
+      Total: <span id="total">${{ total }}</span>
+    </p>
+  </div>
+
+</div>

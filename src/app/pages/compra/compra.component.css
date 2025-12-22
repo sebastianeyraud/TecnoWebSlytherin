@@ -1,0 +1,175 @@
+:host {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  display: block;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+
+.main-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+
+.columna {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border-top: 5px solid transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-col { border-top-color: #d4af37; }   
+.reservas-col { border-top-color: #501634; } 
+.compra-col { border-top-color: #2c3e50; }  
+
+h2 {
+  color: #501634;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.scroll-box {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 500px;
+  padding-right: 5px;
+}
+
+
+.card {
+  background: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: #d4af37; 
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card.seleccionada {
+  border-color: #501634;
+  background-color: #fcf0f5; 
+}
+
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.badge {
+  background: #501634; 
+  color: white;
+  font-size: 0.7rem; padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.desc { font-size: 0.9rem; color: #666; margin: 5px 0; }
+.codigo { font-size: 0.75rem; color: #999; font-weight: bold; margin-bottom: 8px; }
+
+.btn-secundario {
+  background: transparent;
+  border: 1px solid #501634;
+  color: #501634;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.btn-secundario:hover {
+  background: #501634;
+  color: white;
+}
+
+
+.reserva-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.check-aesthetic {
+  width: 20px; height: 20px;
+  accent-color: #501634;
+  cursor: pointer;
+}
+
+
+.total-section { 
+  text-align: right; 
+  margin-bottom: 20px; 
+}
+
+.total-section h3 { 
+  margin: 0; 
+  font-size: 1rem; 
+  color: #666; 
+}
+
+.precio {
+  font-size: 2.5rem;
+  color: #d4af37;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.btn-pagar {
+  width: 100%;
+  padding: 15px;
+  background-color: #501634; 
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-transform: uppercase;
+  transition: transform 0.2s;
+}
+
+.btn-pagar:hover {
+  background-color: #3a0d24;
+  transform: scale(1.02);
+}
+
+
+@media (max-width: 900px) {
+  .main-container { 
+    grid-template-columns: 1fr; 
+    padding: 20px; 
+  }
+}

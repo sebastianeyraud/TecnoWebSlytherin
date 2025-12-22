@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant Admin
+    participant UI
+    participant AlertaService
+    participant LocalStorage
+    participant Usuario
+
+    %% Admin crea alerta en la UI
+    Admin->>UI: Rellenar formulario y enviar
+
+    %% UI llama al servicio (alertNormal/alertFuncion/alertPromo)
+    UI->>AlertaService: alertNormal/alertFuncion/alertPromo(...)
+
+    %% AlertaService lee la lista de usuarios desde localStorage
+    AlertaService->>LocalStorage: getItem('usuarios')
+    LocalStorage-->>AlertaService: rawUsers (JSON) or null
+
+    alt rawUsers != null
+        %% Hay usuarios -> parse y repartir
+        AlertaService->>AlertaService: arr = JSON.parse(rawUsers)
+        loop por cada u in arr
+            AlertaService->>Usuario: u.notificaciones.push(alert)  %% push POJO/alert
+        end
+        %% Persistir cambios
+        AlertaService->>LocalStorage: setItem('usuarios', JSON.stringify(arr))
+        LocalStorage-->>AlertaService: OK
+        AlertaService-->>UI: return true
+        UI-->>Admin: Mostrar "Alerta enviada"
+    else rawUsers == null
+        %% No hay usuarios -> arr = [] y se guarda (resultado: nadie recibe)
+        AlertaService->>AlertaService: arr = []
+        AlertaService->>LocalStorage: setItem('usuarios', JSON.stringify(arr))
+        LocalStorage-->>AlertaService: OK
+        AlertaService-->>UI: return true
+        UI-->>Admin: Mostrar "Alerta creada (sin destinatarios)"
+    end

@@ -1,0 +1,64 @@
+sequenceDiagram
+    participant User
+    participant UI
+    participant Sistema
+    participant ReservaService
+    participant CompraService
+    participant PagoGateway
+
+    %% 1) Usuario ve detalles de película
+    User->>UI: Ver detalles de película (id_pelicula)
+    UI->>Sistema: GET /peliculas/{id}
+    Sistema->>ReservaService: obtener funciones, salas disponibles y conteo de asientos disponibles
+    ReservaService-->>Sistema: funciones + salas_disponibles + cantidad_asientos_disponibles
+    Sistema-->>UI: Mostrar detalles, salas disponibles y cantidad de asientos disponibles
+
+    %% 2) Usuario presiona "Comprar" desde la vista de detalles -> seleccionar sala
+    User->>UI: Presionar "Comprar"
+    UI->>Sistema: GET /salas?pelicula={id}   %% mostrar solo salas disponibles
+    Sistema-->>UI: Mostrar lista de salas disponibles
+
+    %% 3) Seleccionar sala -> mostrar mapa de asientos con disponibilidad
+    User->>UI: Seleccionar sala (id_sala)
+    UI->>Sistema: GET /salas/{id_sala}/asientos
+    Sistema->>ReservaService: consultar disponibilidad de asientos (funcion/sala)
+    ReservaService-->>Sistema: mapa de asientos (disponible/ocupado)
+    Sistema-->>UI: Mostrar mapa interactivo con disponibilidad
+
+    %% 4) Usuario selecciona asientos y presiona "Listo" -> crear reserva
+    User->>UI: Seleccionar asientos [A10,A11] y presionar "Listo"
+    UI->>Sistema: POST /reservas {funcion_id, asientos, usuario_id}
+    Sistema->>ReservaService: intentar bloquear asientos (operación atómica)
+    alt Reserva creada (bloqueo exitoso)
+        ReservaService-->>Sistema: ReservaCreada {reserva_id, expires_at}
+        Sistema-->>UI: Mostrar confirmación de reserva (reserva_id, expires_at)
+    else Algún asiento ya ocupado
+        ReservaService-->>Sistema: Error: asiento(s) no disponibles
+        Sistema-->>UI: Mostrar error / pedir re-selección de asientos
+    end
+
+    %% 5) Monitor: si expira la reserva -> liberar asientos
+    loop Monitor expiraciones
+        ReservaService->>Sistema: Notificar expiracion(reserva_id) cuando expires_at
+        Sistema->>ReservaService: Liberar asientos de la reserva
+        Sistema-->>UI: (si usuario conectado) mostrar "Reserva expirada"
+    end
+
+    %% 6) EXTENSION (opcional): Usuario decide comprar antes de expiry
+    alt Usuario elige "comprar ahora" antes de expires_at
+        User->>UI: Comprar ahora (reserva_id)
+        UI->>Sistema: POST /compras/iniciar {reserva_id, promocion?}
+        Sistema->>CompraService: Validar reserva y preparar compra
+        CompraService->>PagoGateway: Procesar pago (payment_info)
+        alt Pago exitoso
+            PagoGateway-->>CompraService: PagoAutorizado {tx_id}
+            CompraService-->>Sistema: Compra completada {compra_id}
+            Sistema-->>UI: Mostrar confirmación (boleto en historial / opcional imprimir)
+        else Pago fallido
+            PagoGateway-->>CompraService: PagoRechazado {motivo}
+            CompraService-->>Sistema: Compra fallida
+            Sistema->>ReservaService: (opcional) liberar o mantener reserva según política
+            Sistema-->>UI: Mostrar error pago (reintentar/cancelar)
+        end
+    else Usuario no compra -> reserva expira según monitor
+    end

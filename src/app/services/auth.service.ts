@@ -1,64 +1,159 @@
-// import { Observable, of } from 'rxjs'; El profe lo usó, pero creo que si vamos de login a principal siempre, no es necesario
 import { Injectable } from '@angular/core';
-import { User } from '../models/user';
-import { Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { User } from '../models/interfaces/user';
+import { UsuarioI } from '../models/interfaces/usuario-i';
+import { IndexedDBService } from './indexed-db.service';
+import { Membresia } from '../models/membresia';
+
+const STORAGE_KEY = 'myapp_session';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private loggedInSubject = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedInSubject.asObservable();
 
-  private credenciales = new Map<string, string[]>([
-    ['user', ['user', 'user']],
-    ['admin', ['admin', 'admin']],
-  ]);
+  constructor(private dbService: IndexedDBService, private router: Router) {
+    const hasSession = !!localStorage.getItem(STORAGE_KEY);
+    this.loggedInSubject.next(hasSession);
+  }
 
-  constructor() {}
+  async login(email: string, password: string): Promise<boolean> {
+    await this.dbService.dbReady;
+    const store = this.dbService.getStore('users');
 
-  login(user: User): boolean {
-    const datos = this.credenciales.get(user.email);
+    return new Promise(resolve => {
+      const index = store.index('email');
+      const req = index.get(email);
 
-    if (datos) {
-      const [contraseña, rol] = datos;
+      req.onsuccess = (event: any) => {
+        const user: User = event.target.result;
 
-      if (user.password === contraseña) {
-        if (rol === 'admin') {
-          console.log('Admin autenticado');
-          // Crear token y guardar sesión
-          let token: string = btoa(user.email + user.password);
-          sessionStorage.setItem('token',token);
-          return true;
-        } else {
-          console.log('Usuario normal autenticado');
-          // Crear token y guardar sesión
-          let token: string = btoa(user.email + user.password);
-          sessionStorage.setItem('token',token);
-          return true;
+        if (!user || user.password !== password) {
+          resolve(false);
+          return;
         }
-      } else {
-        console.log('Contraseña incorrecta');
+
+        const payload = { id: user.id, email: user.email, role: user.rol };
+        localStorage.setItem(STORAGE_KEY, btoa(JSON.stringify(payload)));
+
+        this.loggedInSubject.next(true);
+        resolve(true);
+      };
+
+      req.onerror = () => resolve(false);
+    });
+  }
+
+  async registrar(userData: { nombre: string; email: string; password: string; rol: 'usuario' | 'admin' }): Promise<User> {
+    await this.dbService.dbReady;
+
+    // 1️⃣ Crear User
+    const nuevoUser: User = {
+      id: Date.now(),
+      nombre: userData.nombre,
+      email: userData.email,
+      password: userData.password,
+      rol: userData.rol
+    };
+
+    const userStore = this.dbService.getStore('users', 'readwrite');
+
+    // Verificar si ya existe el email
+    const existing = await new Promise((resolve, reject) => {
+      const index = userStore.index('email');
+      const req = index.get(nuevoUser.email);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+
+    if (existing) throw new Error('Usuario ya registrado');
+
+    // Guardar User
+    await new Promise((resolve, reject) => {
+      const req = userStore.add(nuevoUser);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+
+    // 2️⃣ Crear perfil vacío según rol con manejo de errores
+    const storePerfil = this.dbService.getStore('usuarios_perfil', 'readwrite');
+
+    try {
+      if (nuevoUser.rol === 'usuario') {
+        const nuevoUsuarioI: UsuarioI = {
+          id: nuevoUser.id,
+          apellido: '',
+          telefono: '',
+          membresia: Membresia.NONE,
+          created_at: new Date(),
+          historial: [],
+          notificaciones: [],
+          p_favoritas: []
+        };
+
+        await new Promise((resolve, reject) => {
+          const req = storePerfil.add(nuevoUsuarioI);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+
+      } else if (nuevoUser.rol === 'admin') {
+        const nuevoAdmin = { id: nuevoUser.id };
+        await new Promise((resolve, reject) => {
+          const req = storePerfil.add(nuevoAdmin);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
       }
-    } else {
-      console.log('No registrado');
+    } catch (perfilError) {
+      // Si falla la creación del perfil, eliminamos el User para no dejarlo huérfano
+      await new Promise((resolve, reject) => {
+        const req = userStore.delete(nuevoUser.id);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => reject(req.error);
+      });
+      throw new Error('Error creando el perfil del usuario');
     }
-    return false;
+
+    return nuevoUser;
   }
 
-  public registrar(user: User): void {
-    this.credenciales.set(user.email, [user.password, user.rol]);
+  logout(): void {
+    localStorage.removeItem(STORAGE_KEY);
+    this.loggedInSubject.next(false);
+    this.router.navigate(['/login']);
   }
 
-  public isLogged():boolean{
-    if(sessionStorage.getItem('token')){
-        return true;
-      }
-      console.log('no hay nadie sesionado iniciao')
+  isLogged(): boolean {
+    return this.loggedInSubject.value;
+  }
+
+  isLoggedIn(): boolean {
+    return this.loggedInSubject.value;
+  }
+
+  isAdmin(): boolean {
+    const token = localStorage.getItem(STORAGE_KEY);
+    if (!token) return false;
+    try {
+      const decoded = JSON.parse(atob(token));
+      return decoded.role === 'admin';
+    } catch {
       return false;
+    }
+  }
+
+  getCurrentUser(): { id: number; email: string; role: string } | null {
+    const token = localStorage.getItem(STORAGE_KEY);
+    if (!token) return null;
+    try {
+      const decoded = JSON.parse(atob(token));
+      return { id: decoded.id, email: decoded.email, role: decoded.role };
+    } catch {
+      return null;
+    }
   }
 }
-
-// Luego en login, hacer una clase simple para 'probar usuario' y aquí comparamos
-// si pasa la autenticación, crear la instancia de cada uno guardar en localstorage
-// después de eso pruebo con login
-
-// si funciona, paso a ver los guards

@@ -1,0 +1,177 @@
+
+  <section class="hero-detalle" *ngIf="pelicula">
+    <div class="hero-container">
+
+      <div class="hero-left">
+        <div class="hero-card">
+
+          <div class="hero-poster">
+            <img [src]="pelicula.poster_url" [alt]="pelicula.titulo" />
+          </div>
+
+          <div class="hero-body">
+
+            <div class="hero-top-row">
+              <p class="hero-fecha">{{ pelicula.estreno | date:'longDate' }}</p>
+              <div class="hero-icons">
+
+                <button
+                  class="icon-btn"
+                  [class.selected]="isFavorite"
+                  (click)="toggleFavorite()"
+                  aria-label="Añadir a favoritos">
+                  {{ isFavorite ? '♥' : '♡' }}
+                </button>
+
+                <button class="icon-btn" aria-label="Compartir">➦</button>
+              </div>
+            </div>
+
+            <h1 class="hero-title">{{ pelicula.titulo }}</h1>
+
+            <p class="hero-meta hero-meta-genre">
+              {{ pelicula.genero }}
+            </p>
+
+            <p class="hero-meta hero-meta-time">
+              ⏱ {{ pelicula.duracion_min }} min
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="trailer-wrapper">
+          <div *ngIf="!trailerPlaying" class="trailer-thumbnail" (click)="playTrailer()">
+            <img [src]="pelicula.poster_url" alt="Tráiler" class="trailer-image" />
+            <button class="trailer-play">▶</button>
+            <p class="trailer-label">Tráiler oficial</p>
+          </div>
+
+          <iframe
+            *ngIf="trailerPlaying"
+            width="560"
+            height="315"
+            [src]="trailerUrl"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+
+        </div>
+      </div>
+
+       <div *ngIf="auth.isAdmin()">
+        <button class="btn-edit" (click)="editarPelicula(pelicula)">Editar</button>
+      </div>
+
+      <app-formulario-pelicula
+        [visible]="showForm"
+        [pelicula]="pelicula"
+        (save)="onSavePelicula($event)"
+        (close)="showForm = false">
+      </app-formulario-pelicula>
+
+
+
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <button
+      class="tab"
+      [class.active]="selectedTab === 'info'"
+      (click)="selectTab('info')"
+    >
+      Información de la película
+    </button>
+
+    <button
+      class="tab"
+      [class.active]="selectedTab === 'horario'"
+      (click)="selectTab('horario')"
+    >
+      Horario de la película
+    </button>
+  </nav>
+
+  <section *ngIf="selectedTab === 'info'" class="detalle-info-section">
+
+    <div class="bloque actores" *ngIf="pelicula">
+      <h2>Actores</h2>
+
+      <div class="actor-carousel">
+        <button
+          class="actor-arrow left"
+          type="button"
+          (click)="scrollActors(-1)">
+          ❮
+        </button>
+
+        <div class="actor-track" #actorTrack>
+          <div class="actor-card" *ngFor="let actor of actores">
+            <img [src]="actor.foto" [alt]="actor.nombre" />
+            <p class="actor-nombre">{{ actor.nombre }}</p>
+          </div>
+        </div>
+
+        <button
+          class="actor-arrow right"
+          type="button"
+          (click)="scrollActors(1)">
+          ❯
+        </button>
+      </div>
+    </div>
+
+    <div class="bloque sinopsis" *ngIf="pelicula">
+      <h2>Sinopsis</h2>
+      {{ pelicula.sinopsis }}
+    </div>
+
+  </section>
+
+  <section *ngIf="selectedTab === 'horario'" class="detalle-horario-section">
+    <div class="dias-tabs">
+      <button
+        *ngFor="let dia of diasDisponibles; let i = index"
+        class="dia"
+        [class.active]="i === 0">
+        {{ dia }}
+      </button>
+    </div>
+
+
+    <div *ngFor="let grupo of funcionesAgrupadas" class="cine-bloque">
+
+      <div class="cine-header">
+        <span>{{ grupo.sala }}</span>
+      </div>
+
+      <div class="formato-row">
+        <button class="tag-formato"
+                *ngFor="let formato of grupo.formatos">
+          {{ formato }}
+        </button>
+      </div>
+
+      <p class="nota-horario">
+        *Los horarios aquí expuestos representan el inicio de cada función
+      </p>
+
+      <div class="horas-row">
+        <button
+          class="hora-btn"
+          *ngFor="let f of grupo.funciones"
+          [routerLink]="['/asientos', pelicula.titulo]"
+          [queryParams]="{
+            sala: grupo.sala,
+            hora: f.start_time
+          }"
+        >
+          {{ f.start_time | date:'HH:mm' }}
+        </button>
+      </div>
+
+    </div>
+
+</section>

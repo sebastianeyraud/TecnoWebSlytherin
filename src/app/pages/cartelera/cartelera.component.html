@@ -1,0 +1,150 @@
+<div class="cartelera-page">
+
+  <app-hero></app-hero>
+  <div *ngIf="auth.isAdmin()">
+    <h1>Admin view</h1>
+  </div>
+
+  <main class="layout">
+
+    <aside class="filters">
+      <div class="filter-group filter-search">
+        <div class="input-with-icon">
+          <span class="input-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Buscar"
+            [(ngModel)]="filtro.titulo"
+            (input)="aplicarFiltros()"
+          />
+        </div>
+      </div>
+
+      <div class="filter-divider"></div>
+
+      <div class="filter-group">
+        <label>Tiempo</label>
+        <input
+          type="text"
+          placeholder="Ej: 2h 30m"
+          [(ngModel)]="filtro.tiempo"
+          (input)="aplicarFiltros()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Rango de edad</label>
+        <select
+          [(ngModel)]="filtro.edad"
+          (change)="aplicarFiltros()"
+        >
+          <option value="">Todas las edades</option>
+          <option>7+</option>
+          <option>14+</option>
+          <option>18+</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Categoria</label>
+        <input
+          type="text"
+          placeholder="Ej: Musical"
+          [(ngModel)]="filtro.categoria"
+          (input)="aplicarFiltros()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Casting</label>
+        <input
+          type="text"
+          placeholder="Ej: Cynthia Erivo"
+          [(ngModel)]="filtro.casting"
+          (input)="aplicarFiltros()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Rango precio</label>
+        <div class="price-row">
+          <div class="price-input">
+            <span class="price-prefix">$</span>
+            <input
+              type="number"
+              placeholder="00000"
+              [(ngModel)]="filtro.precioMin"
+              (input)="aplicarFiltros()"
+            />
+          </div>
+
+          <span class="range-separator">a</span>
+
+          <div class="price-input">
+            <span class="price-prefix">$</span>
+            <input
+              type="number"
+              placeholder="00000"
+              [(ngModel)]="filtro.precioMax"
+              (input)="aplicarFiltros()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button *ngIf="auth.isAdmin()" (click)="showForm = true">Agregar Película</button>
+
+      
+      <app-formulario-pelicula
+        [visible]="showForm"
+        (save)="onSavePelicula($event)"
+        (close)="showForm = false">
+      </app-formulario-pelicula>
+
+
+      <div class="filter-divider"></div>
+
+    </aside>
+
+    <section class="movie-detail">
+
+
+      <div class="movie-card" *ngFor="let peli of peliculasFiltradas">
+
+
+        <div class="movie-poster">
+          <img [src]="peli.poster_url" [alt]="peli.titulo" />
+        </div>
+
+        <div class="movie-info">
+          <h2>{{ peli.titulo }}</h2>
+
+          <p class="movie-meta">
+            {{ peli.genero }}<br />
+            {{ peli.duracion_min }} minutos<br />
+            {{ peli.clasificacion }}
+          </p>
+
+          <p class="movie-premiere">
+            Estreno<br />
+            <span>{{ peli.created_at | date }}</span>
+          </p>
+        </div>
+
+        <div class="movie-description">
+          <p>{{ peli.sinopsis }}</p>
+
+          <button class="btn-secondary" [routerLink]="['/pelicula', peli.titulo]">
+            Ver
+          </button>
+          <div *ngIf="auth.isAdmin()" class="admin-buttons">
+            <button (click)="eliminarPelicula(peli)">Eliminar película</button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+</div>

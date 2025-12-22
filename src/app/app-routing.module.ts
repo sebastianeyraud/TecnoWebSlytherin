@@ -1,34 +1,74 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
+//Componentes
+import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
-import { PrincipalComponent } from './pages/principal/principal.component';
+import { RegistroComponent } from './pages/registro/registro.component';
+import { PerfilComponent} from './pages/perfil/perfil.component';
 import { AdminComponent } from './pages/admin/admin.component';
-import { PerfilComponent } from './pages/perfil/perfil.component';
+import { CarteleraComponent } from './pages/cartelera/cartelera.component';
+import { DetallePeliculaComponent } from './pages/detalle-pelicula/detalle-pelicula.component';
+import { AsientosComponent } from './pages/asientos/asientos.component';
+import { CompraComponent } from './pages/compra/compra.component';
+import { MembresiaComponent } from './components/membresia/membresia.component';
+import { PromocionesComponent } from './pages/promociones/promociones.component';
+
+//Guards
+import { AuthGuard } from './guards/auth.guard';
+import { ProteccionGuard } from './guards/proteccion.guard';
+import { ProteccionAdminGuard } from './guards/proteccion-admin.guard';
 
 const routes: Routes = [
   {
-    path:'',
-    component: PrincipalComponent
+    path: '',
+    component: HomeComponent,
   },
   {
     path: 'login',
     component: LoginComponent
-    //canActivate: [proteccionGuard]
+  },
+  { path: 'registro', component: RegistroComponent },
+  { path: 'perfil', component: PerfilComponent, canActivate: [AuthGuard] },
+    {
+    path: 'admin/salas',
+    component: AdminComponent,
+    canActivate: [ProteccionGuard, ProteccionAdminGuard]
+  },
+  {
+    path: 'admin/promociones',
+    component: AdminComponent,
+    canActivate: [ProteccionGuard, ProteccionAdminGuard]
   },
   {
     path: 'admin',
-    component: AdminComponent
+    component: AdminComponent,
+    canActivate: [ProteccionGuard, ProteccionAdminGuard]
   },
   {
-    path: 'perfil',
-    component: PerfilComponent
+    path: 'cartelera',
+    component: CarteleraComponent
   },
+  {
+  path: 'comprar',
+  loadComponent: () => import('./pages/compra/compra.component').then(m => m.CompraComponent),
+  canActivate: [AuthGuard]
+  },
+  {
+    path: 'pelicula/:titulo',
+    component: DetallePeliculaComponent
+  },
+  { path: 'asientos/:titulo',
+    component: AsientosComponent
+
+  },
+  { path: 'membresia', component: MembresiaComponent, canActivate: [AuthGuard] },
+  { path: 'promociones', component: PromocionesComponent },
   {
     path: '**',
     redirectTo: '',
   }
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
