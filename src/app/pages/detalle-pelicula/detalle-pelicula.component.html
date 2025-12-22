@@ -133,9 +133,10 @@
   <section *ngIf="selectedTab === 'horario'" class="detalle-horario-section">
     <div class="dias-tabs">
       <button
-        *ngFor="let dia of diasDisponibles; let i = index"
+        *ngFor="let dia of diasDisponibles"
         class="dia"
-        [class.active]="i === 0">
+        [class.active]="dia === diaSeleccionado"
+        (click)="filtrarPorDia(dia)">
         {{ dia }}
       </button>
     </div>

@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class IndexedDBService {
   private dbName = 'AMC_DB_V2';
-  private dbVersion = 21;
+  private dbVersion = 30;
   private db!: IDBDatabase;
   public dbReady!: Promise<void>;
 
@@ -118,7 +118,7 @@ export class IndexedDBService {
         trailer: 'https://www.youtube.com/watch?v=zSWdZVtXT7E',
         estreno: '2014-11-07',
         casting: [4, 5],
-        funciones: [2]
+        funciones: [4, 5]
       },
       {
         id: 3,
@@ -132,7 +132,7 @@ export class IndexedDBService {
         trailer: 'https://www.youtube.com/watch?v=6COmYeLsz4c',
         estreno: '2014-11-07',
         casting: [6, 7],
-        funciones: [2]
+        funciones: [7, 8, 9 ]
       }
     ];
     const storePeliculas = tx.objectStore('peliculas');
@@ -154,7 +154,7 @@ export class IndexedDBService {
     // ---- FUNCIONES ----
     const funciones = [
       { id: 1, pelicula_id: 1, sala_id: 1, formato: '2D', start_time: '2025-02-02T18:00', end_time: '2025-02-02T20:30', precio_base: 5500, disponible: true },
-      { id: 2, pelicula_id: 2, sala_id: 1, formato: 'IMAX', start_time: '2025-02-03T20:00', end_time: '2025-02-03T22:50', precio_base: 7500, disponible: true }
+      { id: 2, pelicula_id: 2, sala_id: 1, formato: 'IMAX', start_time: '2025-02-03T20:00', end_time: '2025-02-03T22:50', precio_base: 7500, disponible: true },
     ];
     const storeFunciones = tx.objectStore('funciones');
     funciones.forEach(f => storeFunciones.put(f));

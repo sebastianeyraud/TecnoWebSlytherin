@@ -370,8 +370,14 @@
   display: flex;
   gap: 16px;
   margin-bottom: 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
 }
 
+.dias-tabs::-webkit-scrollbar {
+  display: none;
+}
 .dia {
   background: transparent;
   border: none;

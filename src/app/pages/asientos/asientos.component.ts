@@ -8,17 +8,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class AsientosComponent implements OnInit, OnDestroy {
 
-  peliculas = [
-    { nombre: 'Avengers: Endgame', precio: 10 },
-    { nombre: 'Joker', precio: 12 },
-    { nombre: 'Toy Story 4', precio: 8 },
-    { nombre: 'The Lion King', precio: 9 }
-  ];
-
-  peliculaSeleccionada = this.peliculas[0];
   filas: any[] = [];
   cantidad: number = 0;
-  total: number = 0;
 
   peliculaTitulo: string = '';
   sala: string = '';
@@ -28,7 +19,10 @@ export class AsientosComponent implements OnInit, OnDestroy {
   interval: any;
   tiempoExpirado: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.peliculaTitulo = this.route.snapshot.paramMap.get('titulo') || '';
@@ -36,10 +30,11 @@ export class AsientosComponent implements OnInit, OnDestroy {
     this.hora = this.route.snapshot.queryParamMap.get('hora') || '';
 
     this.generarAsientos();
-    this.simularEstados(); 
-    this.actualizarTotales();
+    this.simularEstados();
+    this.actualizarCantidad();
     this.iniciarTemporizador();
   }
+
 
   iniciarTemporizador() {
     this.interval = setInterval(() => {
@@ -56,6 +51,7 @@ export class AsientosComponent implements OnInit, OnDestroy {
     if (this.interval) clearInterval(this.interval);
   }
 
+
   generarAsientos() {
     const letras = ['A','B','C','D','E','F','G','H'];
     const columnas = 12;
@@ -71,8 +67,10 @@ export class AsientosComponent implements OnInit, OnDestroy {
     }));
   }
 
+
   simularEstados() {
     const discapacitados = ['A4','A5','A6','A7','A8','A9'];
+
     this.filas.forEach(fila => {
       fila.asientos.forEach((a: any) => {
         if (discapacitados.includes(a.id)) {
@@ -84,45 +82,51 @@ export class AsientosComponent implements OnInit, OnDestroy {
     });
   }
 
+  // SELECCIONAR ASIENTO
+  // =============================
   seleccionarAsiento(asiento: any) {
-    if (asiento.ocupado) return;
+    if (asiento.ocupado || asiento.discapacitado) return;
+
     asiento.seleccionado = !asiento.seleccionado;
-    this.actualizarTotales();
+    this.actualizarCantidad();
   }
 
-  actualizarTotales() {
+  actualizarCantidad() {
     let count = 0;
-    this.filas.forEach(f =>
-      count += f.asientos.filter((a: any) => a.seleccionado).length
-    );
+
+    this.filas.forEach(fila => {
+      fila.asientos.forEach((a: any) => {
+        if (a.seleccionado) count++;
+      });
+    });
+
     this.cantidad = count;
-    this.total = count * this.peliculaSeleccionada.precio;
   }
 
   irAComprar() {
-  const asientosSeleccionados: string[] = [];
+    if (this.cantidad === 0) return;
 
-  this.filas.forEach(fila => {
-    fila.asientos.forEach((a: any) => {
-      if (a.seleccionado) {
-        asientosSeleccionados.push(a.id);
-      }
+    const asientosSeleccionados: string[] = [];
+
+    this.filas.forEach(fila => {
+      fila.asientos.forEach((a: any) => {
+        if (a.seleccionado) {
+          asientosSeleccionados.push(a.id);
+        }
+      });
     });
-  });
 
-  const nuevaReserva = {
-  id: Date.now(),
-  funcion_id: this.peliculaTitulo,
-  asientos_etiquetas: asientosSeleccionados,
-  created_at: new Date(),
-  expires_at: new Date(Date.now() + 1000 * 60 * 15),
-  status: 'ACTIVA'
-};
+    const nuevaReserva = {
+      id: Date.now(),
+      funcion_id: this.peliculaTitulo,
+      asientos_etiquetas: asientosSeleccionados,
+      created_at: new Date(),
+      expires_at: new Date(Date.now() + 1000 * 60 * 15),
+      status: 'ACTIVA'
+    };
 
+    localStorage.setItem('reservas', JSON.stringify([nuevaReserva]));
 
-  localStorage.setItem('reservas', JSON.stringify([nuevaReserva]));
-
-  this.router.navigate(['/comprar']);
-}
-
+    this.router.navigate(['/comprar']);
+  }
 }

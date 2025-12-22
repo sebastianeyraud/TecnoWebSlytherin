@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PeliculaService } from 'src/app/services/pelicula.service';
@@ -15,17 +15,21 @@ import { Subscription } from 'rxjs';
   templateUrl: './detalle-pelicula.component.html',
   styleUrls: ['./detalle-pelicula.component.css']
 })
-export class DetallePeliculaComponent implements OnInit, AfterViewInit {
+export class DetallePeliculaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   pelicula!: PeliculaI;
   actores: Actor[] = [];
   funciones: FuncionI[] = [];
-  trailerUrl!: SafeResourceUrl;
-  funcionesAgrupadas: any[] = [];
+
   diasDisponibles: string[] = [];
+  diaSeleccionado!: string;
+  funcionesFiltradas: FuncionI[] = [];
+  funcionesAgrupadas: any[] = [];
+
+  trailerUrl!: SafeResourceUrl;
   trailerPlaying = false;
   cargando = true;
-  showForm: boolean = false;
+  showForm = false;
 
   selectedTab: 'info' | 'horario' = 'info';
   peliculas: PeliculaI[] = [];
@@ -46,7 +50,7 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     const titulo = decodeURIComponent(this.route.snapshot.paramMap.get('titulo')!);
 
     this.subscription = this.peliculaService.peliculas$.subscribe(pelis => {
-      if (!pelis.length) return; 
+      if (!pelis.length) return;
 
       this.peliculas = pelis;
       const raw = pelis.find(p => p.titulo === titulo);
@@ -64,7 +68,6 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     this.peliculaService.getAll();
   }
 
-
   ngAfterViewInit(): void {}
 
   ngOnDestroy() {
@@ -78,7 +81,7 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     ]);
 
     this.actores = (this.pelicula.casting ?? [])
-      .map(id => allActores.find(a => Number(a.id) === Number(id))) 
+      .map(id => allActores.find(a => Number(a.id) === Number(id)))
       .filter(a => a != null) as Actor[];
 
     this.funciones = (this.pelicula.funciones ?? [])
@@ -87,15 +90,37 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
 
     const diasSet = new Set<string>();
     this.funciones.forEach(f => {
-      const dia = new Date(f.start_time).toLocaleDateString('es-ES', { weekday: 'long' });
+      const dia = new Date(f.start_time)
+        .toLocaleDateString('es-ES', { weekday: 'long' });
       diasSet.add(dia.charAt(0).toUpperCase() + dia.slice(1));
     });
+
     this.diasDisponibles = Array.from(diasSet);
 
+    this.diaSeleccionado = this.diasDisponibles[0];
+    this.filtrarPorDia(this.diaSeleccionado);
+
+    this.cargando = false;
+  }
+
+  filtrarPorDia(dia: string) {
+    this.diaSeleccionado = dia;
+
+    this.funcionesFiltradas = this.funciones.filter(f => {
+      const d = new Date(f.start_time)
+        .toLocaleDateString('es-ES', { weekday: 'long' });
+      return d.toLowerCase() === dia.toLowerCase();
+    });
+
     const salasMap: Record<number, any> = {};
-    this.funciones.forEach(f => {
+
+    this.funcionesFiltradas.forEach(f => {
       if (!salasMap[f.sala]) {
-        salasMap[f.sala] = { sala: f.sala, funciones: [], formatos: new Set<string>() };
+        salasMap[f.sala] = {
+          sala: f.sala,
+          funciones: [],
+          formatos: new Set<string>()
+        };
       }
       salasMap[f.sala].funciones.push(f);
       salasMap[f.sala].formatos.add(f.formato);
@@ -105,43 +130,36 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
       ...grupo,
       formatos: Array.from(grupo.formatos)
     }));
-
-    this.cargando = false;
   }
 
   playTrailer() {
-  if (!this.pelicula.trailer) return;
+    if (!this.pelicula.trailer) return;
 
-  const videoId = this.getYoutubeId(this.pelicula.trailer);
-  if (!videoId) return;
+    const videoId = this.getYoutubeId(this.pelicula.trailer);
+    if (!videoId) return;
 
-  const embedUrl =
-    `https://www.youtube.com/embed/${videoId}?` +
-    `autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
+    const embedUrl =
+      `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0`;
 
-  this.trailerUrl =
-    this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+    this.trailerUrl =
+      this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
 
-  this.trailerPlaying = true;
-}
-
-
-
-private getYoutubeId(url: string): string | null {
-  if (!url) return null;
-
-  // https://www.youtube.com/watch?v=XXXX
-  if (url.includes('watch?v=')) {
-    return url.split('v=')[1].split('&')[0];
+    this.trailerPlaying = true;
   }
 
-  // https://youtu.be/XXXX
-  if (url.includes('youtu.be/')) {
-    return url.split('youtu.be/')[1].split('?')[0];
-  }
+  private getYoutubeId(url: string): string | null {
+    if (!url) return null;
 
-  return null;
-}
+    if (url.includes('watch?v=')) {
+      return url.split('v=')[1].split('&')[0];
+    }
+
+    if (url.includes('youtu.be/')) {
+      return url.split('youtu.be/')[1].split('?')[0];
+    }
+
+    return null;
+  }
 
   selectTab(tab: 'info' | 'horario') {
     this.selectedTab = tab;
@@ -152,6 +170,7 @@ private getYoutubeId(url: string): string | null {
     const container = this.actorTrack.nativeElement;
     const firstCard = container.firstElementChild as HTMLElement | null;
     const step = firstCard ? firstCard.clientWidth + 12 : 140;
+
     container.scrollBy({
       left: direction * step * 3,
       behavior: 'smooth'
