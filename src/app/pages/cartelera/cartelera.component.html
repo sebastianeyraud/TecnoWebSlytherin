@@ -64,32 +64,7 @@
         />
       </div>
 
-      <div class="filter-group">
-        <label>Rango precio</label>
-        <div class="price-row">
-          <div class="price-input">
-            <span class="price-prefix">$</span>
-            <input
-              type="number"
-              placeholder="00000"
-              [(ngModel)]="filtro.precioMin"
-              (input)="aplicarFiltros()"
-            />
-          </div>
-
-          <span class="range-separator">a</span>
-
-          <div class="price-input">
-            <span class="price-prefix">$</span>
-            <input
-              type="number"
-              placeholder="00000"
-              [(ngModel)]="filtro.precioMax"
-              (input)="aplicarFiltros()"
-            />
-          </div>
-        </div>
-      </div>
+      
 
       <button *ngIf="auth.isAdmin()" (click)="showForm = true">Agregar Película</button>
 
@@ -126,7 +101,7 @@
 
           <p class="movie-premiere">
             Estreno<br />
-            <span>{{ peli.created_at | date }}</span>
+            <span>{{ peli.estreno | date }}</span>
           </p>
         </div>
 

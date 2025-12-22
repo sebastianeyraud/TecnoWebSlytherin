@@ -225,6 +225,10 @@
   display: grid;
   grid-template-columns: 140px 220px 1fr;
   gap: 24px;
+
+  margin-bottom: 40px;        
+  padding-bottom: 32px;       
+  border-bottom: 1px solid #eee;
 }
 
 .movie-poster img {

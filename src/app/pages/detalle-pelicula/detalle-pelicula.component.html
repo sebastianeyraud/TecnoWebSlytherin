@@ -43,7 +43,7 @@
       <div class="hero-right">
         <div class="trailer-wrapper">
           <div *ngIf="!trailerPlaying" class="trailer-thumbnail" (click)="playTrailer()">
-            <img [src]="pelicula.poster_url" alt="Tráiler" class="trailer-image" />
+            <img [src]="pelicula.banner" alt="Tráiler" class="trailer-image" />
             <button class="trailer-play">▶</button>
             <p class="trailer-label">Tráiler oficial</p>
           </div>

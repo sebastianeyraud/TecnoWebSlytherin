@@ -78,7 +78,7 @@ export class DetallePeliculaComponent implements OnInit, AfterViewInit {
     ]);
 
     this.actores = (this.pelicula.casting ?? [])
-      .map(id => allActores.find(a => a.id === id))
+      .map(id => allActores.find(a => Number(a.id) === Number(id))) 
       .filter(a => a != null) as Actor[];
 
     this.funciones = (this.pelicula.funciones ?? [])

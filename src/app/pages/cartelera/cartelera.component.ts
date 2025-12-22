@@ -18,20 +18,19 @@ export class CarteleraComponent implements OnInit {
   filtro: PeliculaFiltro = {};
   showForm = false;
 
-  constructor(private peliculasService: PeliculaService,
+  constructor(
+    private peliculaService: PeliculaService,
     private actorService: ActorService,
     private funcionService: FuncionService,
-    public auth: AuthService,
-    public peliculaService: PeliculaService) {
-  }
+    public auth: AuthService
+  ) {}
 
-  ngOnInit(): void {
-    this.peliculaService.peliculas$.subscribe(pelis => {
-      this.peliculas = pelis;
-      this.peliculasFiltradas = [...pelis];
-    });
+  // ✅ CARGA DIRECTA, SIN SUBJECT
+  async ngOnInit(): Promise<void> {
+    this.peliculas = await this.peliculaService.getAll();
+    this.peliculasFiltradas = [...this.peliculas];
 
-    this.peliculaService.getAll();
+    console.log('PELÍCULAS CARGADAS:', this.peliculas);
   }
 
   async onSavePelicula(p: PeliculaI) {
@@ -40,25 +39,19 @@ export class CarteleraComponent implements OnInit {
     } else {
       await this.peliculaService.add(p);
     }
+
+    this.peliculas = await this.peliculaService.getAll();
+    this.peliculasFiltradas = [...this.peliculas];
     this.showForm = false;
   }
 
   async eliminarPelicula(p: PeliculaI) {
-    const confirmacion = confirm(`¿Seguro que quieres eliminar "${p.titulo}"?`);
-    if (!confirmacion) return;
+    if (!confirm(`¿Seguro que quieres eliminar "${p.titulo}"?`)) return;
 
     await this.peliculaService.delete(p.id);
-    alert('Película eliminada');
-  }
-
-
-  async getPeliculas(): Promise<void> {
-    this.peliculas = await this.peliculasService.getAll();
-
+    this.peliculas = await this.peliculaService.getAll();
     this.peliculasFiltradas = [...this.peliculas];
   }
-
-
 
   async aplicarFiltros(): Promise<void> {
     const allActores = await this.actorService.getAll();
@@ -77,7 +70,6 @@ export class CarteleraComponent implements OnInit {
       }
 
       if (this.filtro.edad &&
-        this.filtro.edad !== 'Todas las edades' &&
         p.clasificacion !== this.filtro.edad) {
         return false;
       }
@@ -88,26 +80,11 @@ export class CarteleraComponent implements OnInit {
       }
 
       if (this.filtro.casting) {
-        const encontrado = p.casting.some(actorId => {
-          const actor = allActores.find(a => a.id === actorId);
+        const encontrado = p.casting.some(id => {
+          const actor = allActores.find(a => a.id === id);
           return actor?.nombre.toLowerCase().includes(this.filtro.casting!.toLowerCase());
         });
         if (!encontrado) return false;
-      }
-
-      if (this.filtro.precioMin !== undefined || this.filtro.precioMax !== undefined) {
-        const precios = p.funciones
-          .map(id => allFunciones.find(f => f.id === id))
-          .filter(f => f != null)
-          .map(f => f!.precio_base);
-
-        if (precios.length > 0) {
-          const minPrecio = Math.min(...precios);
-          const maxPrecio = Math.max(...precios);
-
-          if (this.filtro.precioMin !== undefined && maxPrecio < this.filtro.precioMin) return false;
-          if (this.filtro.precioMax !== undefined && minPrecio > this.filtro.precioMax) return false;
-        }
       }
 
       return true;
